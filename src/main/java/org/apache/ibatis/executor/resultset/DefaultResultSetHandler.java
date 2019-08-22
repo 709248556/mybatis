@@ -247,6 +247,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
         // 如果是 multipleResults 单元素，则取首元素返回
         return collapseSingleResultList(multipleResults);
+        
     }
 
     @Override
