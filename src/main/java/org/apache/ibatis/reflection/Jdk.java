@@ -20,6 +20,7 @@ import org.apache.ibatis.io.Resources;
 /**
  * To check the existence of version dependent classes.
  */
+@Deprecated // add by 芋艿，实际已经未使用了
 public class Jdk {
 
   /**

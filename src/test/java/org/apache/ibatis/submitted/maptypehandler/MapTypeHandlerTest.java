@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,20 +25,20 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * See issue #135
  *
  */
-class MapTypeHandlerTest {
+public class MapTypeHandlerTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeAll
-  static void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     // create an SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/maptypehandler/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
@@ -50,23 +50,24 @@ class MapTypeHandlerTest {
   }
 
   @Test
-  void shouldGetAUserFromAnnotation() {
+  public void shouldGetAUserFromAnnotation() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       User user = mapper.getUser(1, "User1");
-      Assertions.assertEquals("User1", user.getName());
+      Assert.assertEquals("User1", user.getName());
     }
   }
 
-  @Test
-  void shouldGetAUserFromXML() {
+  @Test(expected=PersistenceException.class)
+  public void shouldGetAUserFromXML() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
-      Map<String, Object> params = new HashMap<>();
+      Map<String, Object> params = new HashMap<String, Object>();
       params.put("id", 1);
       params.put("name", "User1");
-      Assertions.assertThrows(PersistenceException.class, () -> mapper.getUserXML(params));
+      User user = mapper.getUserXML(params);
+      Assert.assertEquals("User1", user.getName());
     }
   }
-
+  
 }

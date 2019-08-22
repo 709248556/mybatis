@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package org.apache.ibatis.submitted.dynsql2;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -27,15 +28,16 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-class DynSqlTest {
+
+public class DynSqlTest {
 
   protected static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeAll
-  static void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/dynsql2/MapperConfig.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
@@ -45,9 +47,9 @@ class DynSqlTest {
   }
 
   @Test
-  void testDynamicSelectWithTypeHandler() {
+  public void testDynamicSelectWithTypeHandler() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      List<Name> names = new ArrayList<>();
+      List<Name> names = new ArrayList<Name>();
 
       Name name = new Name();
       name.setFirstName("Fred");
@@ -64,14 +66,15 @@ class DynSqlTest {
 
       List<Map<String, Object>> answer = sqlSession.selectList("org.apache.ibatis.submitted.dynsql2.dynamicSelectWithTypeHandler", parameter);
 
-      assertEquals(2, answer.size());
+      assertTrue(answer.size() == 2);
     }
   }
 
   @Test
-  void testSimpleSelect() {
+  @SuppressWarnings("unchecked")
+  public void testSimpleSelect() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      Map<String, Object> answer = sqlSession.selectOne("org.apache.ibatis.submitted.dynsql2.simpleSelect", 1);
+      Map<String, Object> answer = (Map<String, Object>) sqlSession.selectOne("org.apache.ibatis.submitted.dynsql2.simpleSelect", 1);
 
       assertEquals(answer.get("ID"), 1);
       assertEquals(answer.get("FIRSTNAME"), "Fred");

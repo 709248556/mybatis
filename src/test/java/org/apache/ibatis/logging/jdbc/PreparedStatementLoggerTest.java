@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,27 +15,21 @@
  */
 package org.apache.ibatis.logging.jdbc;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.type.JdbcType;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@ExtendWith(MockitoExtension.class)
-class PreparedStatementLoggerTest {
+import java.sql.*;
+
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class PreparedStatementLoggerTest {
 
   @Mock
   Log log;
@@ -46,40 +40,37 @@ class PreparedStatementLoggerTest {
   @Mock
   ResultSet resultSet;
 
-  private PreparedStatement ps;
+  PreparedStatement ps;
+  @Before
+  public void setUp() throws SQLException {
+    when(log.isDebugEnabled()).thenReturn(true);
 
-  @BeforeEach
-  void setUp() throws SQLException {
+    when(preparedStatement.executeQuery(anyString())).thenReturn(resultSet);
+    when(preparedStatement.execute(anyString())).thenReturn(true);
     ps = PreparedStatementLogger.newInstance(this.preparedStatement, log, 1);
   }
 
   @Test
-  void shouldPrintParameters() throws SQLException {
-    when(log.isDebugEnabled()).thenReturn(true);
-    when(preparedStatement.executeQuery(anyString())).thenReturn(resultSet);
-
+  public void shouldPrintParameters() throws SQLException {
     ps.setInt(1, 10);
     ResultSet rs = ps.executeQuery("select 1 limit ?");
 
     verify(log).debug(contains("Parameters: 10(Integer)"));
-    Assertions.assertNotNull(rs);
-    Assertions.assertNotSame(resultSet, rs);
+    Assert.assertNotNull(rs);
+    Assert.assertNotSame(resultSet, rs);
   }
 
   @Test
-  void shouldPrintNullParameters() throws SQLException {
-    when(log.isDebugEnabled()).thenReturn(true);
-    when(preparedStatement.execute(anyString())).thenReturn(true);
-
+  public void shouldPrintNullParameters() throws SQLException {
     ps.setNull(1, JdbcType.VARCHAR.TYPE_CODE);
     boolean result = ps.execute("update name = ? from test");
 
     verify(log).debug(contains("Parameters: null"));
-    Assertions.assertTrue(result);
+    Assert.assertTrue(result);
   }
 
   @Test
-  void shouldNotPrintLog() throws SQLException {
+  public void shouldNotPrintLog() throws SQLException {
     ps.getResultSet();
     ps.getParameterMetaData();
 
@@ -87,10 +78,8 @@ class PreparedStatementLoggerTest {
   }
 
   @Test
-  void shouldPrintUpdateCount() throws SQLException {
-    when(log.isDebugEnabled()).thenReturn(true);
+  public void shouldPrintUpdateCount() throws SQLException {
     when(preparedStatement.getUpdateCount()).thenReturn(1);
-
     ps.getUpdateCount();
 
     verify(log).debug(contains("Updates: 1"));

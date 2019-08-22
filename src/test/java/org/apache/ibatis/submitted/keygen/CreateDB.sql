@@ -26,5 +26,6 @@ CREATE TABLE country (
 CREATE TABLE planet (
   id int IDENTITY,
   name varchar(32) DEFAULT NULL,
-  code varchar(64) GENERATED ALWAYS AS (name || '-' || id)
+  code varchar(64) GENERATED ALWAYS AS (name || '-' || id),
+  sub_name varchar(32) DEFAULT NULL
 );

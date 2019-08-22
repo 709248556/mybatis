@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.submitted.nested;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.Reader;
 import java.util.HashMap;
@@ -27,15 +27,15 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-class NestedForEachTest {
+public class NestedForEachTest {
 
   protected static SqlSessionFactory sqlSessionFactory;
-
-  @BeforeAll
-  static void setUp() throws Exception {
+  
+  @BeforeClass
+  public static void setUp() throws Exception {
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/nested/MapperConfig.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
@@ -45,7 +45,7 @@ class NestedForEachTest {
   }
 
   @Test
-  void testSimpleSelect() {
+  public void testSimpleSelect() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Name name = new Name();
       name.setLastName("Flintstone");
@@ -60,9 +60,9 @@ class NestedForEachTest {
   }
 
   @Test
-  void testSimpleSelectWithPrimitives() {
+  public void testSimpleSelectWithPrimitives() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      Map<String, Object> parameter = new HashMap<>();
+      Map<String, Object> parameter = new HashMap<String, Object>();
       int[] array = new int[] {1, 3, 5};
       parameter.put("ids", array);
 
@@ -74,16 +74,16 @@ class NestedForEachTest {
   }
 
   @Test
-  void testSimpleSelectWithMapperAndPrimitives() {
+  public void testSimpleSelectWithMapperAndPrimitives() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       List<Map<String, Object>> answer = mapper.simpleSelectWithMapperAndPrimitives(1, 3, 5);
       assertEquals(3, answer.size());
     }
   }
-
+  
   @Test
-  void testNestedSelect() {
+  public void testNestedSelect() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Name name = new Name();
       name.setLastName("Flintstone");
@@ -101,7 +101,7 @@ class NestedForEachTest {
   }
 
   @Test
-  void testNestedSelect2() {
+  public void testNestedSelect2() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Name name = new Name();
       name.setLastName("Flintstone");

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,57 +15,57 @@
  */
 package org.apache.ibatis.builder.xml.dynamic;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Section;
 import org.apache.ibatis.scripting.xmltags.ExpressionEvaluator;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-class ExpressionEvaluatorTest {
+public class ExpressionEvaluatorTest {
 
   private ExpressionEvaluator evaluator = new ExpressionEvaluator();
 
   @Test
-  void shouldCompareStringsReturnTrue() {
+  public void shouldCompareStringsReturnTrue() {
     boolean value = evaluator.evaluateBoolean("username == 'cbegin'", new Author(1, "cbegin", "******", "cbegin@apache.org", "N/A", Section.NEWS));
-    assertTrue(value);
+    assertEquals(true, value);
   }
 
   @Test
-  void shouldCompareStringsReturnFalse() {
+  public void shouldCompareStringsReturnFalse() {
     boolean value = evaluator.evaluateBoolean("username == 'norm'", new Author(1, "cbegin", "******", "cbegin@apache.org", "N/A", Section.NEWS));
-    assertFalse(value);
+    assertEquals(false, value);
   }
 
   @Test
-  void shouldReturnTrueIfNotNull() {
+  public void shouldReturnTrueIfNotNull() {
     boolean value = evaluator.evaluateBoolean("username", new Author(1, "cbegin", "******", "cbegin@apache.org", "N/A", Section.NEWS));
-    assertTrue(value);
+    assertEquals(true, value);
   }
 
   @Test
-  void shouldReturnFalseIfNull() {
+  public void shouldReturnFalseIfNull() {
     boolean value = evaluator.evaluateBoolean("password", new Author(1, "cbegin", null, "cbegin@apache.org", "N/A", Section.NEWS));
-    assertFalse(value);
+    assertEquals(false, value);
   }
 
   @Test
-  void shouldReturnTrueIfNotZero() {
+  public void shouldReturnTrueIfNotZero() {
     boolean value = evaluator.evaluateBoolean("id", new Author(1, "cbegin", null, "cbegin@apache.org", "N/A", Section.NEWS));
-    assertTrue(value);
+    assertEquals(true, value);
   }
 
   @Test
-  void shouldReturnFalseIfZero() {
+  public void shouldReturnFalseIfZero() {
     boolean value = evaluator.evaluateBoolean("id", new Author(0, "cbegin", null, "cbegin@apache.org", "N/A", Section.NEWS));
-    assertFalse(value);
+    assertEquals(false, value);
   }
 
   @Test
-  void shouldReturnFalseIfZeroWithScale() {
+  public void shouldReturnFalseIfZeroWithScale() {
     class Bean {
       @SuppressWarnings("unused")
       public double d = 0.0d;
@@ -74,7 +74,7 @@ class ExpressionEvaluatorTest {
   }
 
   @Test
-  void shouldIterateOverIterable() {
+  public void shouldIterateOverIterable() {
     final HashMap<String, String[]> parameterObject = new HashMap<String, String[]>() {{
       put("array", new String[]{"1", "2", "3"});
     }};

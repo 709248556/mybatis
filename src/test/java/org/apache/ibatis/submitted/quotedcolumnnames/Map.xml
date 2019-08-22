@@ -22,7 +22,7 @@
 
 <mapper namespace="org.apache.ibatis.submitted.quotedcolumnnames.Map">
 
-	<select id="doSelect" resultType="java.util.HashMap">
+	<select id="doSelect" resultType="java.util.HashMap" flushCache="true">
 		select
 			ID as "id",
 			FIRST_NAME as "firstName",

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,17 +24,17 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 // issue #524
-class BlockingCacheTest {
+public class BlockingCacheTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeEach
-  void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     // create a SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/blocking_cache/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
@@ -46,13 +46,19 @@ class BlockingCacheTest {
   }
 
   @Test
-  void testBlockingCache() {
+  public void testBlockingCache() {
     ExecutorService defaultThreadPool = Executors.newFixedThreadPool(2);
 
     long init = System.currentTimeMillis();
 
     for (int i = 0; i < 2; i++) {
-      defaultThreadPool.execute(this::accessDB);
+      defaultThreadPool.execute(new Runnable() {
+
+        @Override
+        public void run() {
+          accessDB();
+        }
+      });
     }
 
     defaultThreadPool.shutdown();
@@ -61,7 +67,7 @@ class BlockingCacheTest {
     }
 
     long totalTime = System.currentTimeMillis() - init;
-    Assertions.assertTrue(totalTime > 1000);
+    Assert.assertTrue(totalTime > 1000);
   }
 
   private void accessDB() {
@@ -71,7 +77,7 @@ class BlockingCacheTest {
       try {
         Thread.sleep(500);
       } catch (InterruptedException e) {
-        Assertions.fail(e.getMessage());
+        Assert.fail(e.getMessage());
       }
     }
   }

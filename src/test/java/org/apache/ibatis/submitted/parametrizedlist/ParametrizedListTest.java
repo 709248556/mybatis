@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -20,21 +20,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.BaseDataTest;
-import org.junit.jupiter.api.Assertions;
+import org.junit.Assert;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-class ParametrizedListTest {
+public class ParametrizedListTest {
 
   private SqlSessionFactory sqlSessionFactory;
 
-  @BeforeEach
-  void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/parametrizedlist/Config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
@@ -44,38 +44,38 @@ class ParametrizedListTest {
   }
 
   @Test
-  void testShouldDetectUsersAsParameterInsideAList() {
+  public void testShouldDetectUsersAsParameterInsideAList() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       List<User<String>> list = mapper.getAListOfUsers();
-      Assertions.assertEquals(User.class, list.get(0).getClass());
+      Assert.assertEquals(User.class, list.get(0).getClass());
     }
   }
 
   @Test
-  void testShouldDetectUsersAsParameterInsideAMap() {
+  public void testShouldDetectUsersAsParameterInsideAMap() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Map<Integer, User<String>> map = mapper.getAMapOfUsers();
-      Assertions.assertEquals(User.class, map.get(1).getClass());
+      Assert.assertEquals(User.class, map.get(1).getClass());
     }
   }
 
   @Test
-  void testShouldGetAUserAsAMap() {
+  public void testShouldGetAUserAsAMap() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Map<String, Object> map = mapper.getUserAsAMap();
-      Assertions.assertEquals(1, map.get("ID"));
+      Assert.assertEquals(1, map.get("ID"));
     }
   }
 
   @Test
-  void testShouldGetAListOfMaps() {
+  public void testShouldGetAListOfMaps() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       List<Map<String, Object>> map = mapper.getAListOfMaps();
-      Assertions.assertEquals(1, map.get(0).get("ID"));
+      Assert.assertEquals(1, map.get(0).get("ID"));
     }
   }
 

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,24 +15,24 @@
  */
 package org.apache.ibatis.logging.jdbc;
 
+import org.apache.ibatis.logging.Log;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import org.apache.ibatis.logging.Log;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class StatementLoggerTest {
 
   @Mock
@@ -41,34 +41,33 @@ public class StatementLoggerTest {
   @Mock
   Log log;
 
-  private Statement st;
+  Statement st;
 
-  @BeforeEach
-  void setUp() throws SQLException {
+  @Before
+  public void setUp() throws SQLException {
+    when(log.isDebugEnabled()).thenReturn(true);
+    when(statement.execute(anyString())).thenReturn(true);
     st = StatementLogger.newInstance(statement, log, 1);
   }
 
   @Test
-  void shouldPrintLog() throws SQLException {
-    when(log.isDebugEnabled()).thenReturn(true);
+  public void shouldPrintLog() throws SQLException {
     st.executeQuery("select 1");
 
     verify(log).debug(contains("Executing: select 1"));
   }
 
   @Test
-  void shouldPrintLogForUpdate() throws SQLException {
-    when(log.isDebugEnabled()).thenReturn(true);
-    when(statement.execute(anyString())).thenReturn(true);
+  public void shouldPrintLogForUpdate() throws SQLException {
     String sql = "update name = '' from test";
     boolean execute = st.execute(sql);
 
     verify(log).debug(contains(sql));
-    Assertions.assertTrue(execute);
+    Assert.assertTrue(execute);
   }
 
   @Test
-  void shouldNotPrintLog() throws SQLException {
+  public void shouldNotPrintLog() throws SQLException {
     st.getResultSet();
     st.close();
     verify(log, times(0)).debug(anyString());

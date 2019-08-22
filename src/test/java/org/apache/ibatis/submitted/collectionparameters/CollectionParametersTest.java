@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,16 +26,16 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-class CollectionParametersTest {
+public class CollectionParametersTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeAll
-  static void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     // create an SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/collectionparameters/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
@@ -47,39 +47,40 @@ class CollectionParametersTest {
   }
 
   @Test
-  void shouldGetTwoUsersPassingAList() {
+  public void shouldGetTwoUsersPassingAList() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
-      ArrayList<Integer> list = new ArrayList<>();
+      ArrayList<Integer> list = new ArrayList<Integer>();
       list.add(1);
       list.add(2);
       List<User> users = mapper.getUsersFromList(list);
-      Assertions.assertEquals(2, users.size());
+      Assert.assertEquals(2, users.size());
     }
   }
 
   @Test
-  void shouldGetTwoUsersPassingAnArray() {
+  public void shouldGetTwoUsersPassingAnArray() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Integer[] list = new Integer[2];
-      list[0] = 1;
-      list[1] = 2;
+      list[0]=1;
+      list[1]=2;
       List<User> users = mapper.getUsersFromArray(list);
-      Assertions.assertEquals(2, users.size());
+      Assert.assertEquals(2, users.size());
     }
   }
 
   @Test
-  void shouldGetTwoUsersPassingACollection() {
+  public void shouldGetTwoUsersPassingACollection() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
-      Set<Integer> list = new HashSet<>();
+      Set<Integer> list = new HashSet<Integer>();
       list.add(1);
       list.add(2);
       List<User> users = mapper.getUsersFromCollection(list);
-      Assertions.assertEquals(2, users.size());
+      Assert.assertEquals(2, users.size());
     }
   }
 
+  
 }

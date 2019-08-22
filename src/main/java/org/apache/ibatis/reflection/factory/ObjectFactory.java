@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -21,31 +21,38 @@ import java.util.Properties;
 /**
  * MyBatis uses an ObjectFactory to create all needed new Objects.
  *
+ * Object 工厂接口，用于创建指定类的对象
+ * 
  * @author Clinton Begin
  */
 public interface ObjectFactory {
 
   /**
+   * 设置 Properties
+   *
    * Sets configuration properties.
    * @param properties configuration properties
    */
-  default void setProperties(Properties properties) {
-    // NOP
-  }
+  void setProperties(Properties properties);
 
   /**
-   * Creates a new object with default constructor.
+   * 创建指定类的对象，使用默认构造方法
+   *
+   * Creates a new object with default constructor. 
    * @param type Object type
-   * @return
+   * @return 对象
    */
   <T> T create(Class<T> type);
 
   /**
    * Creates a new object with the specified constructor and params.
+   *
+   * 创建指定类的对象，使用特定的构造方法
+   *
    * @param type Object type
-   * @param constructorArgTypes Constructor argument types
-   * @param constructorArgs Constructor argument values
-   * @return
+   * @param constructorArgTypes Constructor argument types 指定构造方法的参数列表
+   * @param constructorArgs Constructor argument values 参数数组
+   * @return 对象
    */
   <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs);
 
@@ -53,6 +60,8 @@ public interface ObjectFactory {
    * Returns true if this object can have a set of other objects.
    * It's main purpose is to support non-java.util.Collection objects like Scala collections.
    *
+   * 判断指定类是否为集合类
+   * 
    * @param type Object type
    * @return whether it is a collection or not
    * @since 3.1.0

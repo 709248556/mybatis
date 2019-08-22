@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2015 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@ package org.apache.ibatis.cache;
 
 import org.apache.ibatis.cache.decorators.FifoCache;
 import org.apache.ibatis.cache.impl.PerpetualCache;
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-class FifoCacheTest {
+public class FifoCacheTest {
 
   @Test
-  void shouldRemoveFirstItemInBeyondFiveEntries() {
+  public void shouldRemoveFirstItemInBeyondFiveEntries() {
     FifoCache cache = new FifoCache(new PerpetualCache("default"));
     cache.setSize(5);
     for (int i = 0; i < 5; i++) {
@@ -36,7 +36,7 @@ class FifoCacheTest {
   }
 
   @Test
-  void shouldRemoveItemOnDemand() {
+  public void shouldRemoveItemOnDemand() {
     FifoCache cache = new FifoCache(new PerpetualCache("default"));
     cache.putObject(0, 0);
     assertNotNull(cache.getObject(0));
@@ -45,7 +45,7 @@ class FifoCacheTest {
   }
 
   @Test
-  void shouldFlushAllItemsOnDemand() {
+  public void shouldFlushAllItemsOnDemand() {
     FifoCache cache = new FifoCache(new PerpetualCache("default"));
     for (int i = 0; i < 5; i++) {
       cache.putObject(i, i);

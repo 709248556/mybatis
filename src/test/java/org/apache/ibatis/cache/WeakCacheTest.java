@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,25 +15,25 @@
  */
 package org.apache.ibatis.cache;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.ibatis.cache.decorators.SerializedCache;
 import org.apache.ibatis.cache.decorators.WeakCache;
 import org.apache.ibatis.cache.impl.PerpetualCache;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-class WeakCacheTest {
+public class WeakCacheTest {
 
   @Test
-  void shouldDemonstrateObjectsBeingCollectedAsNeeded() {
+  public void shouldDemonstrateObjectsBeingCollectedAsNeeded() {
     final int N = 3000000;
     WeakCache cache = new WeakCache(new PerpetualCache("default"));
     for (int i = 0; i < N; i++) {
       cache.putObject(i, i);
       if (cache.getSize() < i + 1) {
-        // System.out.println("Cache exceeded with " + (i + 1) + " entries.");
+        //System.out.println("Cache exceeded with " + (i + 1) + " entries.");
         break;
       }
       if ((i + 1) % 100000 == 0) {
@@ -44,8 +44,9 @@ class WeakCacheTest {
     assertTrue(cache.getSize() < N);
   }
 
+
   @Test
-  void shouldDemonstrateCopiesAreEqual() {
+  public void shouldDemonstrateCopiesAreEqual() {
     Cache cache = new WeakCache(new PerpetualCache("default"));
     cache = new SerializedCache(cache);
     for (int i = 0; i < 1000; i++) {
@@ -56,7 +57,7 @@ class WeakCacheTest {
   }
 
   @Test
-  void shouldRemoveItemOnDemand() {
+  public void shouldRemoveItemOnDemand() {
     WeakCache cache = new WeakCache(new PerpetualCache("default"));
     cache.putObject(0, 0);
     assertNotNull(cache.getObject(0));
@@ -65,7 +66,7 @@ class WeakCacheTest {
   }
 
   @Test
-  void shouldFlushAllItemsOnDemand() {
+  public void shouldFlushAllItemsOnDemand() {
     WeakCache cache = new WeakCache(new PerpetualCache("default"));
     for (int i = 0; i < 5; i++) {
       cache.putObject(i, i);

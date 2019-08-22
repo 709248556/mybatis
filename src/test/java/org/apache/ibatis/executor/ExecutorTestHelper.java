@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2017 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -53,9 +53,9 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
-class ExecutorTestHelper {
+public class ExecutorTestHelper {
 
-  static final Cache authorCache;
+  public static final Cache authorCache;
 
   static {
     authorCache =
@@ -67,9 +67,9 @@ class ExecutorTestHelper {
 
   }
 
-  static MappedStatement prepareInsertAuthorMappedStatement(final Configuration config) {
+  public static MappedStatement prepareInsertAuthorMappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    return new MappedStatement.Builder(config, "insertAuthor", new StaticSqlSource(config,"INSERT INTO author (id,username,password,email,bio,favourite_section) values(?,?,?,?,?,?)"), SqlCommandType.INSERT)
+    MappedStatement ms = new MappedStatement.Builder(config, "insertAuthor", new StaticSqlSource(config,"INSERT INTO author (id,username,password,email,bio,favourite_section) values(?,?,?,?,?,?)"), SqlCommandType.INSERT)
         .parameterMap(
             new ParameterMap.Builder(
                 config, "defaultParameterMap", Author.class,
@@ -84,11 +84,12 @@ class ExecutorTestHelper {
                   }
                 }).build())
         .cache(authorCache).build();
+    return ms;
   }
 
-  static MappedStatement prepareInsertAuthorMappedStatementWithAutoKey(final Configuration config) {
+  public static MappedStatement prepareInsertAuthorMappedStatementWithAutoKey(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    return new MappedStatement.Builder(config, "insertAuthor", new StaticSqlSource(config,"INSERT INTO author (username,password,email,bio,favourite_section) values(?,?,?,?,?)"), SqlCommandType.INSERT)
+    MappedStatement ms = new MappedStatement.Builder(config, "insertAuthor", new StaticSqlSource(config,"INSERT INTO author (username,password,email,bio,favourite_section) values(?,?,?,?,?)"), SqlCommandType.INSERT)
         .parameterMap(
             new ParameterMap.Builder(config, "defaultParameterMap", Author.class, new ArrayList<ParameterMapping>() {
               {
@@ -103,11 +104,12 @@ class ExecutorTestHelper {
         .keyGenerator(Jdbc3KeyGenerator.INSTANCE)
         .keyProperty("id")
         .build();
+    return ms;
   }
 
-  static MappedStatement prepareInsertAuthorProc(final Configuration config) {
+  public static MappedStatement prepareInsertAuthorProc(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    return new MappedStatement.Builder(config, "insertAuthorProc", new StaticSqlSource(config,"{call insertAuthor(?,?,?,?)}"), SqlCommandType.INSERT)
+    MappedStatement ms = new MappedStatement.Builder(config, "insertAuthorProc", new StaticSqlSource(config,"{call insertAuthor(?,?,?,?)}"), SqlCommandType.INSERT)
         .parameterMap(new ParameterMap.Builder(config, "defaultParameterMap", Author.class,
             new ArrayList<ParameterMapping>() {
               {
@@ -118,11 +120,12 @@ class ExecutorTestHelper {
               }
             }).build())
         .cache(authorCache).build();
+    return ms;
   }
 
-  static MappedStatement prepareUpdateAuthorMappedStatement(final Configuration config) {
+  public static MappedStatement prepareUpdateAuthorMappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    return new MappedStatement.Builder(config, "updateAuthor", new StaticSqlSource(config,"UPDATE author SET username = ?, password = ?, email = ?, bio = ? WHERE id = ?"), SqlCommandType.UPDATE)
+    MappedStatement ms = new MappedStatement.Builder(config, "updateAuthor", new StaticSqlSource(config,"UPDATE author SET username = ?, password = ?, email = ?, bio = ? WHERE id = ?"), SqlCommandType.UPDATE)
         .parameterMap(new ParameterMap.Builder(config, "defaultParameterMap", Author.class,
             new ArrayList<ParameterMapping>() {
               {
@@ -134,11 +137,12 @@ class ExecutorTestHelper {
               }
             }).build())
         .cache(authorCache).build();
+    return ms;
   }
 
-  static MappedStatement prepareDeleteAuthorMappedStatement(final Configuration config) {
+  public static MappedStatement prepareDeleteAuthorMappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    return new MappedStatement.Builder(config, "deleteAuthor", new StaticSqlSource(config,"DELETE FROM author WHERE id = ?"), SqlCommandType.DELETE)
+    MappedStatement ms = new MappedStatement.Builder(config, "deleteAuthor", new StaticSqlSource(config,"DELETE FROM author WHERE id = ?"), SqlCommandType.DELETE)
         .parameterMap(new ParameterMap.Builder(config, "defaultParameterMap", Author.class,
             new ArrayList<ParameterMapping>() {
               {
@@ -147,9 +151,10 @@ class ExecutorTestHelper {
             }).build())
         .cache(authorCache)
         .build();
+    return ms;
   }
 
-  static MappedStatement prepareSelectOneAuthorMappedStatement(final Configuration config) {
+  public static MappedStatement prepareSelectOneAuthorMappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
 
     final ResultMap rm = new ResultMap.Builder(config, "defaultResultMap", Author.class, new
@@ -164,7 +169,7 @@ class ExecutorTestHelper {
           }
         }).build();
 
-    return new MappedStatement.Builder(config, "selectAuthor", new StaticSqlSource(config,"SELECT * FROM author WHERE id = ?"), SqlCommandType.SELECT)
+    MappedStatement ms = new MappedStatement.Builder(config, "selectAuthor", new StaticSqlSource(config,"SELECT * FROM author WHERE id = ?"), SqlCommandType.SELECT)
         .parameterMap(new ParameterMap.Builder(config, "defaultParameterMap", Author.class,
             new ArrayList<ParameterMapping>() {
               {
@@ -177,9 +182,10 @@ class ExecutorTestHelper {
           }
         })
         .cache(authorCache).build();
+    return ms;
   }
 
-  static MappedStatement prepareSelectAllAuthorsAutoMappedStatement(final Configuration config) {
+  public static MappedStatement prepareSelectAllAuthorsAutoMappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     return new MappedStatement.Builder(config, "selectAuthorAutoMap", new StaticSqlSource(config,"SELECT * FROM author ORDER BY id"), SqlCommandType.SELECT)
         .resultMaps(new ArrayList<ResultMap>() {
@@ -194,9 +200,9 @@ class ExecutorTestHelper {
         }).fetchSize(1000).timeout(2000).build();
   }
 
-  static MappedStatement prepareSelectOneAuthorMappedStatementWithConstructorResults(final Configuration config) {
+  public static MappedStatement prepareSelectOneAuthorMappedStatementWithConstructorResults(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    return new MappedStatement.Builder(config, "selectAuthor", new StaticSqlSource(config,"SELECT * FROM author WHERE id = ?"), SqlCommandType.SELECT)
+    MappedStatement ms = new MappedStatement.Builder(config, "selectAuthor", new StaticSqlSource(config,"SELECT * FROM author WHERE id = ?"), SqlCommandType.SELECT)
         .parameterMap(new ParameterMap.Builder(config, "defaultParameterMap", Author.class,
             new ArrayList<ParameterMapping>() {
               {
@@ -223,11 +229,12 @@ class ExecutorTestHelper {
         })
         .cache(authorCache)
         .build();
+    return ms;
   }
 
-  static MappedStatement prepareSelectTwoSetsOfAuthorsProc(final Configuration config) {
+  public static MappedStatement prepareSelectTwoSetsOfAuthorsProc(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    return new MappedStatement.Builder(config, "selectTwoSetsOfAuthors", new StaticSqlSource(config,"{call selectTwoSetsOfAuthors(?,?)}"), SqlCommandType.SELECT)
+    MappedStatement ms = new MappedStatement.Builder(config, "selectTwoSetsOfAuthors", new StaticSqlSource(config,"{call selectTwoSetsOfAuthors(?,?)}"), SqlCommandType.SELECT)
         .statementType(StatementType.CALLABLE)
         .parameterMap(new ParameterMap.Builder(
             config, "defaultParameterMap", Author.class,
@@ -252,11 +259,12 @@ class ExecutorTestHelper {
             add(map);
           }
         }).build();
+    return ms;
   }
 
-  static MappedStatement prepareSelectAuthorViaOutParams(final Configuration config) {
+  public static MappedStatement prepareSelectAuthorViaOutParams(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    return new MappedStatement.Builder(config, "selectAuthorViaOutParams", new StaticSqlSource(config, "{call selectAuthorViaOutParams(?,?,?,?,?)}"), SqlCommandType.SELECT)
+    MappedStatement ms = new MappedStatement.Builder(config, "selectAuthorViaOutParams", new StaticSqlSource(config, "{call selectAuthorViaOutParams(?,?,?,?,?)}"), SqlCommandType.SELECT)
         .statementType(StatementType.CALLABLE)
         .parameterMap(new ParameterMap.Builder(config, "defaultParameterMap", Author.class,
             new ArrayList<ParameterMapping>() {
@@ -268,11 +276,12 @@ class ExecutorTestHelper {
                 add(new ParameterMapping.Builder(config, "bio", registry.getTypeHandler(String.class)).jdbcType(JdbcType.VARCHAR).mode(ParameterMode.OUT).build());
               }
             }).build())
-        .resultMaps(new ArrayList<>())
+        .resultMaps(new ArrayList<ResultMap>())
         .cache(authorCache).build();
+    return ms;
   }
 
-  static MappedStatement prepareSelectDiscriminatedPost(final Configuration config) {
+  public static MappedStatement prepareSelectDiscriminatedPost(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     final ResultMap discriminatorResultMap = new ResultMap.Builder(config, "postResultMap", HashMap.class, new ArrayList<ResultMapping>() {
       {
@@ -281,7 +290,7 @@ class ExecutorTestHelper {
       }
     }).build();
     config.addResultMap(discriminatorResultMap);
-    return new MappedStatement.Builder(config, "selectPosts", new StaticSqlSource(config,"SELECT * FROM post"), SqlCommandType.SELECT)
+    MappedStatement ms = new MappedStatement.Builder(config, "selectPosts", new StaticSqlSource(config,"SELECT * FROM post"), SqlCommandType.SELECT)
         .resultMaps(new ArrayList<ResultMap>() {
           {
             add(new ResultMap.Builder(config, "defaultResultMap", HashMap.class, new ArrayList<ResultMapping>() {
@@ -303,22 +312,24 @@ class ExecutorTestHelper {
 
           }
         }).build();
+    return ms;
   }
-
-  static MappedStatement createInsertAuthorWithIDof99MappedStatement(final Configuration config) {
-    return new MappedStatement.Builder(config, "insertAuthor", new StaticSqlSource(config,"INSERT INTO author (id,username,password,email,bio) values(99,'someone','******','someone@apache.org',null)"), SqlCommandType.INSERT)
+  
+  public static MappedStatement createInsertAuthorWithIDof99MappedStatement(final Configuration config) {
+    MappedStatement ms = new MappedStatement.Builder(config, "insertAuthor", new StaticSqlSource(config,"INSERT INTO author (id,username,password,email,bio) values(99,'someone','******','someone@apache.org',null)"), SqlCommandType.INSERT)
         .statementType(StatementType.STATEMENT)
         .parameterMap(new ParameterMap.Builder(config, "defaultParameterMap", Author.class,
-            new ArrayList<>()).build())
+            new ArrayList<ParameterMapping>()).build())
         .cache(authorCache)
         .build();
+    return ms;
   }
 
-  static MappedStatement createSelectAuthorWithIDof99MappedStatement(final Configuration config) {
+  public static MappedStatement createSelectAuthorWithIDof99MappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    return new MappedStatement.Builder(config, "selectAuthor", new StaticSqlSource(config,"SELECT * FROM author WHERE id = 99"), SqlCommandType.SELECT)
+    MappedStatement ms = new MappedStatement.Builder(config, "selectAuthor", new StaticSqlSource(config,"SELECT * FROM author WHERE id = 99"), SqlCommandType.SELECT)
         .statementType(StatementType.STATEMENT)
-        .parameterMap(new ParameterMap.Builder(config, "defaultParameterMap", Author.class, new ArrayList<>()).build())
+        .parameterMap(new ParameterMap.Builder(config, "defaultParameterMap", Author.class, new ArrayList<ParameterMapping>()).build())
         .resultMaps(new ArrayList<ResultMap>() {
           {
             add(new ResultMap.Builder(config, "defaultResultMap", Author.class, new ArrayList<ResultMapping>() {
@@ -332,9 +343,10 @@ class ExecutorTestHelper {
             }).build());
           }
         }).build();
+    return ms;
   }
 
-  static MappedStatement prepareComplexSelectBlogMappedStatement(final Configuration config) {
+  public static MappedStatement prepareComplexSelectBlogMappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     final SqlSource sqlSource = new StaticSqlSource(config, "SELECT b.id, b.author_id, b.title, a.username, a.password, a.email, a.bio" +
         " FROM blog b" +
@@ -373,7 +385,7 @@ class ExecutorTestHelper {
         }).build();
   }
 
-  static MappedStatement prepareSelectBlogByIdAndAuthor(final Configuration config) {
+  public static MappedStatement prepareSelectBlogByIdAndAuthor(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     final SqlSource sqlSource = new StaticSqlSource(config,"SELECT b.id, b.author_id, b.title, a.username, a.password, a.email, a.bio" +
         " FROM blog b" +
@@ -414,7 +426,7 @@ class ExecutorTestHelper {
 
   }
 
-  static MappedStatement prepareSelectPostsForBlogMappedStatement(final Configuration config) {
+  public static MappedStatement prepareSelectPostsForBlogMappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     final SqlSource sqlSource = new StaticSqlSource(config,"SELECT p.id, p.created_on, p.blog_id, p.section, p.subject, p.body, pt.tag_id," +
         " t.name as tag_name, c.id as comment_id, c.name as comment_name, c.comment" +
@@ -480,7 +492,7 @@ class ExecutorTestHelper {
         }).build();
   }
 
-  static MappedStatement prepareSelectPostMappedStatement(final Configuration config) {
+  public static MappedStatement prepareSelectPostMappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     final SqlSource sqlSource = new StaticSqlSource(config,"SELECT p.id, p.created_on, p.blog_id, p.section, p.subject, p.body, pt.tag_id," +
         " t.name as tag_name, c.id as comment_id, c.name as comment_name, c.comment" +
@@ -549,7 +561,7 @@ class ExecutorTestHelper {
   }
 
 
-  static MappedStatement prepareSelectPostWithBlogByAuthorMappedStatement(final Configuration config) {
+  public static MappedStatement prepareSelectPostWithBlogByAuthorMappedStatement(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     final SqlSource sqlSource = new StaticSqlSource(config,"SELECT p.id, p.created_on, p.blog_id, p.author_id, p.section, p.subject, p.body, pt.tag_id," +
         " t.name as tag_name, c.id as comment_id, c.name as comment_name, c.comment" +
@@ -624,9 +636,9 @@ class ExecutorTestHelper {
   }
 
 
-  static MappedStatement prepareInsertAuthorMappedStatementWithBeforeAutoKey(final Configuration config) {
+  public static MappedStatement prepareInsertAuthorMappedStatementWithBeforeAutoKey(final Configuration config) {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-    final ResultMap rm = new ResultMap.Builder(config, "keyResultMap", Integer.class, new ArrayList<>())
+    final ResultMap rm = new ResultMap.Builder(config, "keyResultMap", Integer.class, new ArrayList<ResultMapping>())
         .build();
 
     MappedStatement kms = new MappedStatement.Builder(config, "insertAuthor!selectKey", new StaticSqlSource(config,"SELECT 123456 as id FROM SYSIBM.SYSDUMMY1"), SqlCommandType.SELECT)
@@ -638,7 +650,7 @@ class ExecutorTestHelper {
         })
         .build();
     config.addMappedStatement(kms);
-    return new MappedStatement.Builder(config, "insertAuthor", new DynamicSqlSource(config, new TextSqlNode("INSERT INTO author (id,username,password,email,bio,favourite_section) values(#{id},#{username},#{password},#{email},#{bio:VARCHAR},#{favouriteSection})")), SqlCommandType.INSERT)
+    MappedStatement ms = new MappedStatement.Builder(config, "insertAuthor", new DynamicSqlSource(config, new TextSqlNode("INSERT INTO author (id,username,password,email,bio,favourite_section) values(#{id},#{username},#{password},#{email},#{bio:VARCHAR},#{favouriteSection})")), SqlCommandType.INSERT)
         .parameterMap(
             new ParameterMap.Builder(config, "defaultParameterMap", Author.class, new ArrayList<ParameterMapping>() {
               {
@@ -654,6 +666,7 @@ class ExecutorTestHelper {
         .keyGenerator(new SelectKeyGenerator(kms, true))
         .keyProperty("id")
         .build();
+    return ms;
   }
 
 

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2018 the original author or authors.
+ *    Copyright 2009-2015 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -58,19 +58,25 @@ public abstract class BaseDataTest {
   }
 
   public static void runScript(DataSource ds, String resource) throws IOException, SQLException {
-    try (Connection connection = ds.getConnection()) {
+    Connection connection = ds.getConnection();
+    try {
       ScriptRunner runner = new ScriptRunner(connection);
       runner.setAutoCommit(true);
       runner.setStopOnError(false);
       runner.setLogWriter(null);
       runner.setErrorLogWriter(null);
       runScript(runner, resource);
+    } finally {
+      connection.close();
     }
   }
 
   public static void runScript(ScriptRunner runner, String resource) throws IOException, SQLException {
-    try (Reader reader = Resources.getResourceAsReader(resource)) {
+    Reader reader = Resources.getResourceAsReader(resource);
+    try {
       runner.runScript(reader);
+    } finally {
+      reader.close();
     }
   }
 

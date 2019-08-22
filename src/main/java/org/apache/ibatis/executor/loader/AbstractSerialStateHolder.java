@@ -109,7 +109,7 @@ public abstract class AbstractSerialStateHolder implements Externalizable {
     }
 
     /* First run */
-    try (ObjectInputStream in = new LookAheadObjectInputStream(new ByteArrayInputStream(this.userBeanBytes))) {
+    try (final ObjectInputStream in = new LookAheadObjectInputStream(new ByteArrayInputStream(this.userBeanBytes))) {
       this.userBean = in.readObject();
       this.unloadedProperties = (Map<String, ResultLoaderMap.LoadPair>) in.readObject();
       this.objectFactory = (ObjectFactory) in.readObject();

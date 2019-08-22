@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,25 +15,22 @@
  */
 package org.apache.ibatis.logging.jdbc;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.apache.ibatis.logging.Log;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.apache.ibatis.logging.Log;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class ConnectionLoggerTest {
+@RunWith(MockitoJUnitRunner.class)
+public class ConnectionLoggerTest {
 
   @Mock
   Connection connection;
@@ -44,29 +41,28 @@ class ConnectionLoggerTest {
   @Mock
   Log log;
 
-  private Connection conn;
+  Connection conn;
 
-  @BeforeEach
-  void setUp() throws SQLException {
+  @Before
+  public void setUp() throws SQLException {
+    when(log.isDebugEnabled()).thenReturn(true);
     conn = ConnectionLogger.newInstance(connection, log, 1);
   }
 
   @Test
-  void shouldPrintPrepareStatement() throws SQLException {
-    when(log.isDebugEnabled()).thenReturn(true);
+  public void shouldPrintPrepareStatement() throws SQLException {
     conn.prepareStatement("select 1");
     verify(log).debug(contains("Preparing: select 1"));
   }
 
   @Test
-  void shouldPrintPrepareCall() throws SQLException {
-    when(log.isDebugEnabled()).thenReturn(true);
+  public void shouldPrintPrepareCall() throws SQLException {
     conn.prepareCall("{ call test() }");
     verify(log).debug(contains("Preparing: { call test() }"));
   }
 
   @Test
-  void shouldNotPrintCreateStatement() throws SQLException {
+  public void shouldNotPrintCreateStatement() throws SQLException {
     conn.createStatement();
     conn.close();
     verify(log, times(0)).debug(anyString());

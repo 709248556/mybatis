@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,30 +15,40 @@
  */
 package org.apache.ibatis.submitted.postgres_genkeys;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
+
+import java.nio.file.Paths;
+import java.util.Collections;
 
 import org.apache.ibatis.BaseDataTest;
+import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.testcontainers.PgContainer;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-@Tag("TestcontainersTests")
-class PostgresGeneratedKeysTest {
+import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres;
+import ru.yandex.qatools.embed.postgresql.util.SocketUtil;
+
+public class PostgresGeneratedKeysTest {
+
+  private static final EmbeddedPostgres postgres = new EmbeddedPostgres();
 
   private static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeAll
-  static void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
+    //  Launch PostgreSQL server. Download / unarchive if necessary.
+    String url = postgres.start(EmbeddedPostgres.cachedRuntimeConfig(Paths.get(System.getProperty("java.io.tmpdir"), "pgembed")), "localhost", SocketUtil.findFreePort(), "postgres_genkeys", "postgres", "root", Collections.emptyList());
+
     Configuration configuration = new Configuration();
-    Environment environment = new Environment("development", new JdbcTransactionFactory(),
-        PgContainer.getUnpooledDataSource());
+    Environment environment = new Environment("development", new JdbcTransactionFactory(), new UnpooledDataSource(
+        "org.postgresql.Driver", url, null));
     configuration.setEnvironment(environment);
     configuration.setUseGeneratedKeys(true);
     configuration.addMapper(Mapper.class);
@@ -48,8 +58,13 @@ class PostgresGeneratedKeysTest {
         "org/apache/ibatis/submitted/postgres_genkeys/CreateDB.sql");
   }
 
+  @AfterClass
+  public static void tearDown() {
+    postgres.stop();
+  }
+
   @Test
-  void testInsertIntoTableWithNoSerialColumn() {
+  public void testInsertIntoTableWithNoSerialColumn() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Section section = new Section();
@@ -61,7 +76,7 @@ class PostgresGeneratedKeysTest {
   }
 
   @Test
-  void testUpdateTableWithSerial() {
+  public void testUpdateTableWithSerial() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       User user = new User();
@@ -73,7 +88,7 @@ class PostgresGeneratedKeysTest {
   }
 
   @Test
-  void testUnusedGeneratedKey() {
+  public void testUnusedGeneratedKey() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       int result = mapper.insertUser("John");

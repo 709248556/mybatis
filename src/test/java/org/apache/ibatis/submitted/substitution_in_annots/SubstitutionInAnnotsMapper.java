@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2015 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@ import org.apache.ibatis.annotations.Select;
 
 public interface SubstitutionInAnnotsMapper {
 
-  String getPersonNameByIdWithXml(int id);
+  public String getPersonNameByIdWithXml(int id);
 
   @Select("select firstName from ibtest.names where id=${value}")
-  String getPersonNameByIdWithAnnotsValue(int id);
+  public String getPersonNameByIdWithAnnotsValue(int id);
 
   @Select("select firstName from ibtest.names where id=${_parameter}")
-  String getPersonNameByIdWithAnnotsParameter(int id);
+  public String getPersonNameByIdWithAnnotsParameter(int id);
 
   @Select("select firstName from ibtest.names where id=${named}")
-  String getPersonNameByIdWithAnnotsParamAnnot(@Param("named") int id);
+  public String getPersonNameByIdWithAnnotsParamAnnot(@Param("named") int id);
 
 }

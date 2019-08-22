@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-class ExternalResourcesTest {
+public class ExternalResourcesTest {
 
   private File sourceFile;
   private File destFile;
@@ -36,8 +36,8 @@ class ExternalResourcesTest {
   /*
    * @throws java.lang.Exception
    */
-  @BeforeEach
-  void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     tempFile = File.createTempFile("migration", "properties");
     tempFile.canWrite();
     sourceFile = File.createTempFile("test1", "sql");
@@ -45,7 +45,7 @@ class ExternalResourcesTest {
   }
 
   @Test
-  void testcopyExternalResource() {
+  public void testcopyExternalResource() {
 
     try {
       ExternalResources.copyExternalResource(sourceFile, destFile);
@@ -55,7 +55,7 @@ class ExternalResourcesTest {
   }
 
   @Test
-  void testcopyExternalResource_fileNotFound() {
+  public void testcopyExternalResource_fileNotFound() {
 
     try {
       badFile = new File("/tmp/nofile.sql");
@@ -67,7 +67,7 @@ class ExternalResourcesTest {
   }
 
   @Test
-  void testcopyExternalResource_emptyStringAsFile() {
+  public void testcopyExternalResource_emptyStringAsFile() {
 
     try {
       badFile = new File(" ");
@@ -79,7 +79,7 @@ class ExternalResourcesTest {
   }
 
   @Test
-  void testGetConfiguredTemplate() {
+  public void testGetConfiguredTemplate() {
     String templateName = "";
 
     try (FileWriter fileWriter = new FileWriter(tempFile)) {
@@ -92,8 +92,8 @@ class ExternalResourcesTest {
     }
   }
 
-  @AfterEach
-  void cleanUp() {
+  @After
+  public void cleanUp() {
     sourceFile.delete();
     destFile.delete();
     tempFile.delete();

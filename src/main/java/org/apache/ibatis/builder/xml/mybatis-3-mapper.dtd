@@ -16,6 +16,7 @@
        limitations under the License.
 
 -->
+
 <!ELEMENT mapper (cache-ref | cache | resultMap* | parameterMap* | sql* | insert* | update* | delete* | select* )+>
 <!ATTLIST mapper
 namespace CDATA #IMPLIED
@@ -289,5 +290,3 @@ test CDATA #REQUIRED
 <!ATTLIST if
 test CDATA #REQUIRED
 >
-
-

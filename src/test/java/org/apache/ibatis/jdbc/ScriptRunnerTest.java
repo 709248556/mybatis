@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
 import org.apache.ibatis.io.Resources;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
@@ -39,13 +39,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-class ScriptRunnerTest extends BaseDataTest {
+public class ScriptRunnerTest extends BaseDataTest {
 
   private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
   @Test
-  @Disabled("This fails with HSQLDB 2.0 due to the create index statements in the schema script")
-  void shouldRunScriptsBySendingFullScriptAtOnce() throws Exception {
+  @Ignore("This fails with HSQLDB 2.0 due to the create index statements in the schema script")
+  public void shouldRunScriptsBySendingFullScriptAtOnce() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     Connection conn = ds.getConnection();
     ScriptRunner runner = new ScriptRunner(conn);
@@ -60,7 +60,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldRunScriptsUsingConnection() throws Exception {
+  public void shouldRunScriptsUsingConnection() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     try (Connection conn = ds.getConnection()) {
       ScriptRunner runner = new ScriptRunner(conn);
@@ -74,7 +74,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldRunScriptsUsingProperties() throws Exception {
+  public void shouldRunScriptsUsingProperties() throws Exception {
     Properties props = Resources.getResourceAsProperties(JPETSTORE_PROPERTIES);
     DataSource dataSource = new UnpooledDataSource(
         props.getProperty("driver"),
@@ -91,7 +91,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldReturnWarningIfEndOfLineTerminatorNotFound() throws Exception {
+  public void shouldReturnWarningIfEndOfLineTerminatorNotFound() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     String resource = "org/apache/ibatis/jdbc/ScriptMissingEOLTerminator.sql";
     try (Connection conn = ds.getConnection();
@@ -112,7 +112,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void commentAferStatementDelimiterShouldNotCauseRunnerFail() throws Exception {
+  public void commentAferStatementDelimiterShouldNotCauseRunnerFail() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     String resource = "org/apache/ibatis/jdbc/ScriptCommentAfterEOLTerminator.sql";
     try (Connection conn = ds.getConnection();
@@ -128,7 +128,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldReturnWarningIfNotTheCurrentDelimiterUsed() throws Exception {
+  public void shouldReturnWarningIfNotTheCurrentDelimiterUsed() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     String resource = "org/apache/ibatis/jdbc/ScriptChangingDelimiterMissingDelimiter.sql";
     try (Connection conn = ds.getConnection();
@@ -148,7 +148,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void changingDelimiterShouldNotCauseRunnerFail() throws Exception {
+  public void changingDelimiterShouldNotCauseRunnerFail() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     String resource = "org/apache/ibatis/jdbc/ScriptChangingDelimiter.sql";
     try (Connection conn = ds.getConnection();
@@ -164,7 +164,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void testLogging() throws Exception {
+  public void testLogging() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     try (Connection conn = ds.getConnection()) {
       ScriptRunner runner = new ScriptRunner(conn);
@@ -187,7 +187,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void testLoggingFullScipt() throws Exception {
+  public void testLoggingFullScipt() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     try (Connection conn = ds.getConnection()) {
       ScriptRunner runner = new ScriptRunner(conn);
@@ -226,7 +226,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldAcceptDelimiterVariations() throws Exception {
+  public void shouldAcceptDelimiterVariations() throws Exception {
     Connection conn = mock(Connection.class);
     Statement stmt = mock(Statement.class);
     when(conn.createStatement()).thenReturn(stmt);
@@ -253,10 +253,10 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void test() {
+  public void test() throws Exception {
     StringBuilder sb = new StringBuilder();
     StringBuilder sb2 = y(sb);
-    assertSame(sb, sb2);
+    assertTrue(sb == sb2);
   }
 
   private StringBuilder y(StringBuilder sb) {
@@ -265,7 +265,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldAcceptMultiCharDelimiter() throws Exception {
+  public void shouldAcceptMultiCharDelimiter() throws Exception {
     Connection conn = mock(Connection.class);
     Statement stmt = mock(Statement.class);
     when(conn.createStatement()).thenReturn(stmt);

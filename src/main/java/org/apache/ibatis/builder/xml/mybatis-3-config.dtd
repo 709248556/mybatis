@@ -16,6 +16,7 @@
        limitations under the License.
 
 -->
+
 <!ELEMENT configuration (properties?, settings?, typeAliases?, typeHandlers?, objectFactory?, objectWrapperFactory?, reflectorFactory?, plugins?, environments?, databaseIdProvider?, mappers?)>
 
 <!ELEMENT databaseIdProvider (property*)>

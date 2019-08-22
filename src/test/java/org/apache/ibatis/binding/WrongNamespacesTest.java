@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2015 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@
 package org.apache.ibatis.binding;
 
 import org.apache.ibatis.session.Configuration;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-class WrongNamespacesTest {
+public class WrongNamespacesTest {
 
-  @Test
-  void shouldFailForWrongNamespace() {
+  @Test(expected=RuntimeException.class)
+  public void shouldFailForWrongNamespace() throws Exception {
     Configuration configuration = new Configuration();
-    Assertions.assertThrows(RuntimeException.class, () -> configuration.addMapper(WrongNamespaceMapper.class));
+    configuration.addMapper(WrongNamespaceMapper.class);
   }
 
-  @Test
-  void shouldFailForMissingNamespace() {
+  @Test(expected=RuntimeException.class)
+  public void shouldFailForMissingNamespace() throws Exception {
     Configuration configuration = new Configuration();
-    Assertions.assertThrows(RuntimeException.class, () -> configuration.addMapper(MissingNamespaceMapper.class));
+    configuration.addMapper(MissingNamespaceMapper.class);
   }
+
 
 }

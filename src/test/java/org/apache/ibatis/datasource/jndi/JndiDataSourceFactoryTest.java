@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2015 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package org.apache.ibatis.datasource.jndi;
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.datasource.DataSourceException;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -32,20 +32,20 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-class JndiDataSourceFactoryTest extends BaseDataTest {
+public class JndiDataSourceFactoryTest extends BaseDataTest {
 
   private static final String TEST_INITIAL_CONTEXT_FACTORY = MockContextFactory.class.getName();
   private static final String TEST_INITIAL_CONTEXT = "/mypath/path/";
   private static final String TEST_DATA_SOURCE = "myDataSource";
   private UnpooledDataSource expectedDataSource;
 
-  @BeforeEach
-  void setup() throws Exception {
+  @Before
+  public void setup() throws Exception {
     expectedDataSource = createUnpooledDataSource(BLOG_PROPERTIES);
   }
 
   @Test
-  void shouldRetrieveDataSourceFromJNDI() {
+  public void shouldRetrieveDataSourceFromJNDI() throws Exception {
     createJndiDataSource();
     JndiDataSourceFactory factory = new JndiDataSourceFactory();
     factory.setProperties(new Properties() {
@@ -59,9 +59,9 @@ class JndiDataSourceFactoryTest extends BaseDataTest {
     assertEquals(expectedDataSource, actualDataSource);
   }
 
-  private void createJndiDataSource() {
+  private void createJndiDataSource() throws Exception {
     try {
-      Properties env = new Properties();
+      Hashtable<String, String> env = new Hashtable<String, String>();
       env.put(Context.INITIAL_CONTEXT_FACTORY, TEST_INITIAL_CONTEXT_FACTORY);
 
       MockContext ctx = new MockContext(false);
@@ -82,21 +82,22 @@ class JndiDataSourceFactoryTest extends BaseDataTest {
   }
 
   public static class MockContext extends InitialContext {
-    private static Map<String,Object> bindings = new HashMap<>();
+    private static Map<String,Object> bindings = new HashMap<String,Object>();
 
-    MockContext(boolean lazy) throws NamingException {
+    public MockContext(boolean lazy) throws NamingException {
       super(lazy);
     }
 
     @Override
-    public Object lookup(String name) {
+    public Object lookup(String name) throws NamingException {
       return bindings.get(name);
     }
 
     @Override
-    public void bind(String name, Object obj) {
+    public void bind(String name, Object obj) throws NamingException {
       bindings.put(name, obj);
     }
   }
+
 
 }

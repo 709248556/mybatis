@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2015 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,16 +17,14 @@ package org.apache.ibatis.submitted.include_property;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.session.Configuration;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-class IncludePropertyErrorTest {
+public class IncludePropertyErrorTest {
 
-  @Test
-  void shouldFailForDuplicatedPropertyNames() {
+  @Test(expected = PersistenceException.class)
+  public void shouldFailForDuplicatedPropertyNames() throws Exception {
     Configuration configuration = new Configuration();
-    Assertions.assertThrows(PersistenceException.class,
-        () -> configuration.addMapper(DuplicatedIncludePropertiesMapper.class));
+    configuration.addMapper(DuplicatedIncludePropertiesMapper.class);
   }
 
 }

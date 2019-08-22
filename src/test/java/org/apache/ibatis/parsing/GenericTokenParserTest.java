@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,22 +15,20 @@
  */
 package org.apache.ibatis.parsing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-class GenericTokenParserTest {
+public class GenericTokenParserTest {
 
   public static class VariableTokenHandler implements TokenHandler {
-    private Map<String, String> variables = new HashMap<>();
+    private Map<String, String> variables = new HashMap<String, String>();
 
-    VariableTokenHandler(Map<String, String> variables) {
+    public VariableTokenHandler(Map<String, String> variables) {
       this.variables = variables;
     }
 
@@ -41,7 +39,7 @@ class GenericTokenParserTest {
   }
 
   @Test
-  void shouldDemonstrateGenericTokenReplacement() {
+  public void shouldDemonstrateGenericTokenReplacement() {
     GenericTokenParser parser = new GenericTokenParser("${", "}", new VariableTokenHandler(new HashMap<String, String>() {
       {
         put("first_name", "James");
@@ -77,8 +75,8 @@ class GenericTokenParserTest {
   }
 
   @Test
-  void shallNotInterpolateSkippedVaiables() {
-    GenericTokenParser parser = new GenericTokenParser("${", "}", new VariableTokenHandler(new HashMap<>()));
+  public void shallNotInterpolateSkippedVaiables() {
+    GenericTokenParser parser = new GenericTokenParser("${", "}", new VariableTokenHandler(new HashMap<String, String>()));
 
     assertEquals("${skipped} variable", parser.parse("\\${skipped} variable"));
     assertEquals("This is a ${skipped} variable", parser.parse("This is a \\${skipped} variable"));
@@ -86,30 +84,28 @@ class GenericTokenParserTest {
     assertEquals("The null is ${skipped} variable", parser.parse("The ${skipped} is \\${skipped} variable"));
   }
 
-  @Disabled("Because it randomly fails on Travis CI. It could be useful during development.")
-  @Test
-  void shouldParseFastOnJdk7u6() {
-    Assertions.assertTimeout(Duration.ofMillis(1), () -> {
-      // issue #760
-      GenericTokenParser parser = new GenericTokenParser("${", "}", new VariableTokenHandler(new HashMap<String, String>() {
-        {
-          put("first_name", "James");
-          put("initial", "T");
-          put("last_name", "Kirk");
-          put("", "");
-        }
-      }));
+  @Ignore("Because it randomly fails on Travis CI. It could be useful during development.")
+  @Test(timeout = 1000)
+  public void shouldParseFastOnJdk7u6() {
+    // issue #760
+    GenericTokenParser parser = new GenericTokenParser("${", "}", new VariableTokenHandler(new HashMap<String, String>() {
+      {
+        put("first_name", "James");
+        put("initial", "T");
+        put("last_name", "Kirk");
+        put("", "");
+      }
+    }));
 
-      StringBuilder input = new StringBuilder();
-      for (int i = 0; i < 10000; i++) {
-        input.append("${first_name} ${initial} ${last_name} reporting. ");
-      }
-      StringBuilder expected = new StringBuilder();
-      for (int i = 0; i < 10000; i++) {
-        expected.append("James T Kirk reporting. ");
-      }
-      assertEquals(expected.toString(), parser.parse(input.toString()));
-    });
+    StringBuilder input = new StringBuilder();
+    for (int i = 0; i < 10000; i++) {
+      input.append("${first_name} ${initial} ${last_name} reporting. ");
+    }
+    StringBuilder expected = new StringBuilder();
+    for (int i = 0; i < 10000; i++) {
+      expected.append("James T Kirk reporting. ");
+    }
+    assertEquals(expected.toString(), parser.parse(input.toString()));
   }
 
 }

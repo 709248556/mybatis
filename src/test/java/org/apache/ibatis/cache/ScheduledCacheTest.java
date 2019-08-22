@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2015 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package org.apache.ibatis.cache;
 import org.apache.ibatis.cache.decorators.LoggingCache;
 import org.apache.ibatis.cache.decorators.ScheduledCache;
 import org.apache.ibatis.cache.impl.PerpetualCache;
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-class ScheduledCacheTest {
+public class ScheduledCacheTest {
 
   @Test
-  void shouldDemonstrateHowAllObjectsAreFlushedAfterBasedOnTime() throws Exception {
+  public void shouldDemonstrateHowAllObjectsAreFlushedAfterBasedOnTime() throws Exception {
     Cache cache = new PerpetualCache("DefaultCache");
     cache = new ScheduledCache(cache);
     ((ScheduledCache) cache).setClearInterval(2500);
@@ -38,7 +38,7 @@ class ScheduledCacheTest {
   }
 
   @Test
-  void shouldRemoveItemOnDemand() {
+  public void shouldRemoveItemOnDemand() {
     Cache cache = new PerpetualCache("DefaultCache");
     cache = new ScheduledCache(cache);
     ((ScheduledCache) cache).setClearInterval(60000);
@@ -50,7 +50,7 @@ class ScheduledCacheTest {
   }
 
   @Test
-  void shouldFlushAllItemsOnDemand() {
+  public void shouldFlushAllItemsOnDemand() {
     Cache cache = new PerpetualCache("DefaultCache");
     cache = new ScheduledCache(cache);
     ((ScheduledCache) cache).setClearInterval(60000);

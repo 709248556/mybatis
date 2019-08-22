@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,16 +22,16 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-class OgnlStaticTest {
+public class OgnlStaticTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeAll
-  static void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     // create a SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/ognlstatic/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
@@ -43,29 +43,29 @@ class OgnlStaticTest {
   }
 
   /**
-   * This is the log output.
+   * This is the log output. 
    * DEBUG [main] - ooo Using Connection [org.hsqldb.jdbc.JDBCConnection@5ae1a5c7]
-   * DEBUG [main] - ==>  Preparing: SELECT * FROM users WHERE name IN (?) AND id = ?
+   * DEBUG [main] - ==>  Preparing: SELECT * FROM users WHERE name IN (?) AND id = ? 
    * DEBUG [main] - ==> Parameters: 1(Integer), 1(Integer)
    * There are two parameter mappings but DefaulParameterHandler maps them both to input paremeter (integer)
    */
   @Test // see issue #448
-  void shouldGetAUserStatic() {
+  public void shouldGetAUserStatic() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       User user = mapper.getUserStatic(1);
-      Assertions.assertNotNull(user);
-      Assertions.assertEquals("User1", user.getName());
+      Assert.assertNotNull(user);
+      Assert.assertEquals("User1", user.getName());
     }
   }
 
   @Test // see issue #61 (gh)
-  void shouldGetAUserWithIfNode() {
+  public void shouldGetAUserWithIfNode() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       User user = mapper.getUserIfNode("User1");
-      Assertions.assertEquals("User1", user.getName());
+      Assert.assertEquals("User1", user.getName());
     }
   }
-
+  
 }

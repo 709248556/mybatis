@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,29 +15,31 @@
  */
 package org.apache.ibatis.type;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-class OffsetDateTimeTypeHandlerTest extends BaseTypeHandlerTest {
+public class OffsetDateTimeTypeHandlerTest extends BaseTypeHandlerTest {
 
   private static final TypeHandler<OffsetDateTime> TYPE_HANDLER = new OffsetDateTimeTypeHandler();
   private static final OffsetDateTime OFFSET_DATE_TIME = OffsetDateTime.now();
+  private static final Timestamp TIMESTAMP = Timestamp.from(OFFSET_DATE_TIME.toInstant());
 
   @Override
   @Test
   public void shouldSetParameter() throws Exception {
     TYPE_HANDLER.setParameter(ps, 1, OFFSET_DATE_TIME, null);
-    verify(ps).setObject(1, OFFSET_DATE_TIME);
+    verify(ps).setTimestamp(1, TIMESTAMP);
   }
 
   @Override
   @Test
   public void shouldGetResultFromResultSetByName() throws Exception {
-    when(rs.getObject("column", OffsetDateTime.class)).thenReturn(OFFSET_DATE_TIME);
+    when(rs.getTimestamp("column")).thenReturn(TIMESTAMP);
     assertEquals(OFFSET_DATE_TIME, TYPE_HANDLER.getResult(rs, "column"));
     verify(rs, never()).wasNull();
   }
@@ -45,7 +47,7 @@ class OffsetDateTimeTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultNullFromResultSetByName() throws Exception {
-    when(rs.getObject("column", OffsetDateTime.class)).thenReturn(null);
+    when(rs.getTimestamp("column")).thenReturn(null);
     assertNull(TYPE_HANDLER.getResult(rs, "column"));
     verify(rs, never()).wasNull();
   }
@@ -53,7 +55,7 @@ class OffsetDateTimeTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultFromResultSetByPosition() throws Exception {
-    when(rs.getObject(1, OffsetDateTime.class)).thenReturn(OFFSET_DATE_TIME);
+    when(rs.getTimestamp(1)).thenReturn(TIMESTAMP);
     assertEquals(OFFSET_DATE_TIME, TYPE_HANDLER.getResult(rs, 1));
     verify(rs, never()).wasNull();
   }
@@ -61,7 +63,7 @@ class OffsetDateTimeTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultNullFromResultSetByPosition() throws Exception {
-    when(rs.getObject(1, OffsetDateTime.class)).thenReturn(null);
+    when(rs.getTimestamp(1)).thenReturn(null);
     assertNull(TYPE_HANDLER.getResult(rs, 1));
     verify(rs, never()).wasNull();
   }
@@ -69,7 +71,7 @@ class OffsetDateTimeTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultFromCallableStatement() throws Exception {
-    when(cs.getObject(1, OffsetDateTime.class)).thenReturn(OFFSET_DATE_TIME);
+    when(cs.getTimestamp(1)).thenReturn(TIMESTAMP);
     assertEquals(OFFSET_DATE_TIME, TYPE_HANDLER.getResult(cs, 1));
     verify(cs, never()).wasNull();
   }
@@ -77,9 +79,8 @@ class OffsetDateTimeTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultNullFromCallableStatement() throws Exception {
-    when(cs.getObject(1, OffsetDateTime.class)).thenReturn(null);
+    when(cs.getTimestamp(1)).thenReturn(null);
     assertNull(TYPE_HANDLER.getResult(cs, 1));
     verify(cs, never()).wasNull();
   }
-
 }

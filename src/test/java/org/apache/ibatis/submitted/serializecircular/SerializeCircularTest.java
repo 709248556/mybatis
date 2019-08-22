@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,30 +22,30 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-//@Disabled("see issue #614")
-class SerializeCircularTest {
+//@Ignore("see issue #614")
+public class SerializeCircularTest {
 
   @Test
-  void serializeAndDeserializeObjectsWithAggressiveLazyLoadingWithoutPreloadingAttribute()
+  public void serializeAndDeserializeObjectsWithAggressiveLazyLoadingWithoutPreloadingAttribute() 
   throws Exception {
     try (SqlSession sqlSession = createSessionWithAggressiveLazyLoading()) {
       testSerializeWithoutPreloadingAttribute(sqlSession);
     }
   }
-
+  
   @Test
-  void serializeAndDeserializeObjectsWithAggressiveLazyLoadingWithPreloadingAttribute()
+  public void serializeAndDeserializeObjectsWithAggressiveLazyLoadingWithPreloadingAttribute() 
   throws Exception {
     try (SqlSession sqlSession = createSessionWithAggressiveLazyLoading()) {
       testSerializeWithPreloadingAttribute(sqlSession);
     }
   }
 
-//  @Disabled("See http://code.google.com/p/mybatis/issues/detail?id=614")
+//  @Ignore("See http://code.google.com/p/mybatis/issues/detail?id=614")
   @Test
-  void serializeAndDeserializeObjectsWithoutAggressiveLazyLoadingWithoutPreloadingAttribute()
+  public void serializeAndDeserializeObjectsWithoutAggressiveLazyLoadingWithoutPreloadingAttribute() 
   throws Exception {
     try (SqlSession sqlSession = createSessionWithoutAggressiveLazyLoading()) {
         //expected problem with deserializing
@@ -54,7 +54,7 @@ class SerializeCircularTest {
   }
 
   @Test
-  void serializeAndDeserializeObjectsWithoutAggressiveLazyLoadingWithPreloadingAttribute()
+  public void serializeAndDeserializeObjectsWithoutAggressiveLazyLoadingWithPreloadingAttribute() 
   throws Exception {
     try (SqlSession sqlSession = createSessionWithoutAggressiveLazyLoading()) {
       testSerializeWithPreloadingAttribute(sqlSession);
@@ -74,7 +74,8 @@ class SerializeCircularTest {
         "org/apache/ibatis/submitted/serializecircular/MapperConfigWithAggressiveLazyLoading.xml":
         "org/apache/ibatis/submitted/serializecircular/MapperConfigWithoutAggressiveLazyLoading.xml";
       SqlSessionFactory sqlSessionFactory = getSqlSessionFactoryXmlConfig(xmlConfig);
-    return sqlSessionFactory.openSession();
+      SqlSession sqlSession = sqlSessionFactory.openSession();
+    return sqlSession;
   }
 
   private void testSerializeWithPreloadingAttribute(SqlSession sqlSession) {
@@ -99,7 +100,7 @@ class SerializeCircularTest {
     serializeAndDeserializeObject(department);
   }
 
-  void serializeAndDeserializeObject(Object anObject) {
+  protected void serializeAndDeserializeObject(Object anObject) {
     UtilityTester.serializeAndDeserializeObject(anObject);
   }
 

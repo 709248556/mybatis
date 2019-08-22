@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -51,9 +51,7 @@ public class VelocitySqlSource implements SqlSource {
     try {
       RuntimeServices runtimeServices = RuntimeSingleton.getRuntimeServices();
       StringReader reader = new StringReader(scriptText);
-      Template template = new Template();
-      template.setName("Template name");
-      SimpleNode node = runtimeServices.parse(reader, template);
+      SimpleNode node = runtimeServices.parse(reader, "Template name");
       script = new Template();
       script.setRuntimeServices(runtimeServices);
       script.setData(node);
@@ -81,7 +79,7 @@ public class VelocitySqlSource implements SqlSource {
   }
 
   public static Map<String, Object> createBindings(Object parameterObject, Configuration configuration) {
-    Map<String, Object> bindings = new HashMap<>();
+    Map<String, Object> bindings = new HashMap<String, Object>();
     bindings.put(PARAMETER_OBJECT_KEY, parameterObject);
     bindings.put(DATABASE_ID_KEY, configuration.getDatabaseId());
     bindings.put("it", new IteratorParameter(bindings));

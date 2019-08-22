@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
  */
 package org.apache.ibatis.session;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -49,20 +49,16 @@ import org.apache.ibatis.domain.blog.mappers.BlogMapper;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.apache.ibatis.executor.result.DefaultResultHandler;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.SqlCommandType;
-import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-class SqlSessionTest extends BaseDataTest {
+public class SqlSessionTest extends BaseDataTest {
   private static SqlSessionFactory sqlMapper;
 
-  @BeforeAll
-  static void setup() throws Exception {
+  @BeforeClass
+  public static void setup() throws Exception {
     createBlogDataSource();
     final String resource = "org/apache/ibatis/builder/MapperConfig.xml";
     final Reader reader = Resources.getResourceAsReader(resource);
@@ -70,7 +66,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldResolveBothSimpleNameAndFullyQualifiedName() {
+  public void shouldResolveBothSimpleNameAndFullyQualifiedName() {
     Configuration c = new Configuration();
     final String fullName = "com.mycache.MyCache";
     final String shortName = "MyCache";
@@ -80,19 +76,19 @@ class SqlSessionTest extends BaseDataTest {
     assertEquals(cache, c.getCache(shortName));
   }
 
-  @Test
-  void shouldFailOverToMostApplicableSimpleName() {
+  @Test(expected=IllegalArgumentException.class)
+  public void shouldFailOverToMostApplicableSimpleName() {
     Configuration c = new Configuration();
     final String fullName = "com.mycache.MyCache";
     final String invalidName = "unknown.namespace.MyCache";
     final PerpetualCache cache = new PerpetualCache(fullName);
     c.addCache(cache);
     assertEquals(cache, c.getCache(fullName));
-    Assertions.assertThrows(IllegalArgumentException.class, () -> c.getCache(invalidName));
+    assertEquals(cache, c.getCache(invalidName));
   }
 
   @Test
-  void shouldSucceedWhenFullyQualifiedButFailDueToAmbiguity() {
+  public void shouldSucceedWhenFullyQualifiedButFailDueToAmbiguity() {
     Configuration c = new Configuration();
 
     final String name1 = "com.mycache.MyCache";
@@ -118,7 +114,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFailToAddDueToNameConflict() {
+  public void shouldFailToAddDueToNameConflict() {
     Configuration c = new Configuration();
     final String fullName = "com.mycache.MyCache";
     final PerpetualCache cache = new PerpetualCache(fullName);
@@ -132,44 +128,42 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldOpenAndClose() {
+  public void shouldOpenAndClose() {
     SqlSession session = sqlMapper.openSession(TransactionIsolationLevel.SERIALIZABLE);
     session.close();
   }
 
   @Test
-  void shouldCommitAnUnUsedSqlSession() {
+  public void shouldCommitAnUnUsedSqlSession() {
     try (SqlSession session = sqlMapper.openSession(TransactionIsolationLevel.SERIALIZABLE)) {
       session.commit(true);
     }
   }
 
   @Test
-  void shouldRollbackAnUnUsedSqlSession() {
+  public void shouldRollbackAnUnUsedSqlSession() {
     try (SqlSession session = sqlMapper.openSession(TransactionIsolationLevel.SERIALIZABLE)) {
       session.rollback(true);
     }
   }
 
   @Test
-  void shouldSelectAllAuthors() {
+  public void shouldSelectAllAuthors() {
     try (SqlSession session = sqlMapper.openSession(TransactionIsolationLevel.SERIALIZABLE)) {
       List<Author> authors = session.selectList("org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAllAuthors");
       assertEquals(2, authors.size());
     }
   }
 
-  @Test
-  void shouldFailWithTooManyResultsException() {
+  @Test(expected=TooManyResultsException.class)
+  public void shouldFailWithTooManyResultsException() {
     try (SqlSession session = sqlMapper.openSession(TransactionIsolationLevel.SERIALIZABLE)) {
-      Assertions.assertThrows(TooManyResultsException.class, () -> {
-        session.selectOne("org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAllAuthors");
-      });
+      session.selectOne("org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAllAuthors");
     }
   }
-
+  
   @Test
-  void shouldSelectAllAuthorsAsMap() {
+  public void shouldSelectAllAuthorsAsMap() {
     try (SqlSession session = sqlMapper.openSession(TransactionIsolationLevel.SERIALIZABLE)) {
       final Map<Integer,Author> authors = session.selectMap("org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAllAuthors", "id");
       assertEquals(2, authors.size());
@@ -180,7 +174,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectCountOfPosts() {
+  public void shouldSelectCountOfPosts() {
     try (SqlSession session = sqlMapper.openSession()) {
       Integer count = session.selectOne("org.apache.ibatis.domain.blog.mappers.BlogMapper.selectCountOfPosts");
       assertEquals(5, count.intValue());
@@ -188,14 +182,16 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldEnsureThatBothEarlyAndLateResolutionOfNesteDiscriminatorsResolesToUseNestedResultSetHandler() {
+  public void shouldEnsureThatBothEarlyAndLateResolutionOfNesteDiscriminatorsResolesToUseNestedResultSetHandler() {
+    try (SqlSession session = sqlMapper.openSession()) {
       Configuration configuration = sqlMapper.getConfiguration();
       assertTrue(configuration.getResultMap("org.apache.ibatis.domain.blog.mappers.BlogMapper.earlyNestedDiscriminatorPost").hasNestedResultMaps());
       assertTrue(configuration.getResultMap("org.apache.ibatis.domain.blog.mappers.BlogMapper.lateNestedDiscriminatorPost").hasNestedResultMaps());
+    }
   }
 
   @Test
-  void shouldSelectOneAuthor() {
+  public void shouldSelectOneAuthor() {
     try (SqlSession session = sqlMapper.openSession()) {
       Author author = session.selectOne(
           "org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthor", new Author(101));
@@ -205,7 +201,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectOneAuthorAsList() {
+  public void shouldSelectOneAuthorAsList() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Author> authors = session.selectList(
           "org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthor", new Author(101));
@@ -215,7 +211,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectOneImmutableAuthor() {
+  public void shouldSelectOneImmutableAuthor() {
     try (SqlSession session = sqlMapper.openSession()) {
       ImmutableAuthor author = session.selectOne(
           "org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectImmutableAuthor", new Author(101));
@@ -225,7 +221,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectOneAuthorWithInlineParams() {
+  public void shouldSelectOneAuthorWithInlineParams() {
     try (SqlSession session = sqlMapper.openSession()) {
       Author author = session.selectOne(
           "org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthorWithInlineParams", new Author(101));
@@ -234,7 +230,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldInsertAuthor() {
+  public void shouldInsertAuthor() {
     try (SqlSession session = sqlMapper.openSession()) {
       Author expected = new Author(500, "cbegin", "******", "cbegin@somewhere.com", "Something...", null);
       int updates = session.insert("org.apache.ibatis.domain.blog.mappers.AuthorMapper.insertAuthor", expected);
@@ -250,7 +246,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldUpdateAuthorImplicitRollback() {
+  public void shouldUpdateAuthorImplicitRollback() {
     try (SqlSession session = sqlMapper.openSession()) {
       Author original = session.selectOne("org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthor", 101);
       original.setEmail("new@email.com");
@@ -266,7 +262,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldUpdateAuthorCommit() {
+  public void shouldUpdateAuthorCommit() {
     Author original;
     try (SqlSession session = sqlMapper.openSession()) {
       original = session.selectOne("org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthor", 101);
@@ -284,7 +280,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldUpdateAuthorIfNecessary() {
+  public void shouldUpdateAuthorIfNecessary() {
     Author original;
     try (SqlSession session = sqlMapper.openSession()) {
       original = session.selectOne("org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthor", 101);
@@ -303,7 +299,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldDeleteAuthor() {
+  public void shouldDeleteAuthor() {
     try (SqlSession session = sqlMapper.openSession()) {
       final int id = 102;
 
@@ -323,7 +319,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectBlogWithPostsAndAuthorUsingSubSelects() {
+  public void shouldSelectBlogWithPostsAndAuthorUsingSubSelects() {
     try (SqlSession session = sqlMapper.openSession()) {
       Blog blog = session.selectOne("org.apache.ibatis.domain.blog.mappers.BlogMapper.selectBlogWithPostsUsingSubSelect", 1);
       assertEquals("Jim Business", blog.getTitle());
@@ -335,10 +331,10 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectBlogWithPostsAndAuthorUsingSubSelectsLazily() {
+  public void shouldSelectBlogWithPostsAndAuthorUsingSubSelectsLazily() {
     try (SqlSession session = sqlMapper.openSession()) {
       Blog blog = session.selectOne("org.apache.ibatis.domain.blog.mappers.BlogMapper.selectBlogWithPostsUsingSubSelectLazily", 1);
-      Assertions.assertTrue(blog instanceof Proxy);
+      Assert.assertTrue(blog instanceof Proxy);
       assertEquals("Jim Business", blog.getTitle());
       assertEquals(2, blog.getPosts().size());
       assertEquals("Corn nuts", blog.getPosts().get(0).getSubject());
@@ -348,7 +344,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectBlogWithPostsAndAuthorUsingJoin() {
+  public void shouldSelectBlogWithPostsAndAuthorUsingJoin() {
     try (SqlSession session = sqlMapper.openSession()) {
       Blog blog = session.selectOne("org.apache.ibatis.domain.blog.mappers.BlogMapper.selectBlogJoinedWithPostsAndAuthor", 1);
       assertEquals("Jim Business", blog.getTitle());
@@ -379,7 +375,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectNestedBlogWithPostsAndAuthorUsingJoin() {
+  public void shouldSelectNestedBlogWithPostsAndAuthorUsingJoin() {
     try (SqlSession session = sqlMapper.openSession()) {
       Blog blog = session.selectOne("org.apache.ibatis.domain.blog.mappers.NestedBlogMapper.selectBlogJoinedWithPostsAndAuthor", 1);
       assertEquals("Jim Business", blog.getTitle());
@@ -410,7 +406,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldThrowExceptionIfMappedStatementDoesNotExist() {
+  public void shouldThrowExceptionIfMappedStatementDoesNotExist() {
     try (SqlSession session = sqlMapper.openSession()) {
       session.selectList("ThisStatementDoesNotExist");
       fail("Expected exception to be thrown due to statement that does not exist.");
@@ -420,37 +416,18 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldThrowExceptionIfTryingToAddStatementWithSameNameInXml() {
+  public void shouldThrowExceptionIfTryingToAddStatementWithSameName() {
     Configuration config = sqlMapper.getConfiguration();
     try {
-      MappedStatement ms = new MappedStatement.Builder(config,
-          "org.apache.ibatis.domain.blog.mappers.BlogMapper.selectBlogWithPostsUsingSubSelect",
-          Mockito.mock(SqlSource.class), SqlCommandType.SELECT)
-              .resource("org/mybatis/TestMapper.xml").build();
-      config.addMappedStatement(ms);
+      config.addMappedStatement(config.getMappedStatement("org.apache.ibatis.domain.blog.mappers.BlogMapper.selectBlogWithPostsUsingSubSelect"));
       fail("Expected exception to be thrown due to statement that already exists.");
     } catch (Exception e) {
-      assertTrue(e.getMessage().contains("already contains value for org.apache.ibatis.domain.blog.mappers.BlogMapper.selectBlogWithPostsUsingSubSelect. please check org/apache/ibatis/builder/BlogMapper.xml and org/mybatis/TestMapper.xml"));
+      assertTrue(e.getMessage().contains("already contains value for org.apache.ibatis.domain.blog.mappers.BlogMapper.selectBlogWithPostsUsingSubSelect"));
     }
   }
 
   @Test
-  void shouldThrowExceptionIfTryingToAddStatementWithSameNameInAnnotation() {
-    Configuration config = sqlMapper.getConfiguration();
-    try {
-      MappedStatement ms = new MappedStatement.Builder(config,
-          "org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthor2",
-          Mockito.mock(SqlSource.class), SqlCommandType.SELECT)
-              .resource("org/mybatis/TestMapper.xml").build();
-      config.addMappedStatement(ms);
-      fail("Expected exception to be thrown due to statement that already exists.");
-    } catch (Exception e) {
-      assertTrue(e.getMessage().contains("already contains value for org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthor2. please check org/apache/ibatis/domain/blog/mappers/AuthorMapper.java (best guess) and org/mybatis/TestMapper.xml"));
-    }
-  }
-
-  @Test
-  void shouldCacheAllAuthors() {
+  public void shouldCacheAllAuthors() {
     int first;
     try (SqlSession session = sqlMapper.openSession()) {
       List<Author> authors = session.selectList("org.apache.ibatis.builder.CachedAuthorMapper.selectAllAuthors");
@@ -466,7 +443,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldNotCacheAllAuthors() {
+  public void shouldNotCacheAllAuthors() throws Exception {
     int first;
     try (SqlSession session = sqlMapper.openSession()) {
       List<Author> authors = session.selectList("org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAllAuthors");
@@ -481,7 +458,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectAuthorsUsingMapperClass() {
+  public void shouldSelectAuthorsUsingMapperClass() {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       List<Author> authors = mapper.selectAllAuthors();
@@ -490,7 +467,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldExecuteSelectOneAuthorUsingMapperClass() {
+  public void shouldExecuteSelectOneAuthorUsingMapperClass() {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       Author author = mapper.selectAuthor(101);
@@ -500,16 +477,16 @@ class SqlSessionTest extends BaseDataTest {
 
 
   @Test
-  void shouldExecuteSelectOneAuthorUsingMapperClassThatReturnsALinedHashMap() {
+  public void shouldExecuteSelectOneAuthorUsingMapperClassThatReturnsALinedHashMap() {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       LinkedHashMap<String, Object> author = mapper.selectAuthorLinkedHashMap(101);
       assertEquals(101, author.get("ID"));
     }
   }
-
+  
   @Test
-  void shouldExecuteSelectAllAuthorsUsingMapperClassThatReturnsSet() {
+  public void shouldExecuteSelectAllAuthorsUsingMapperClassThatReturnsSet() {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       Collection<Author> authors = mapper.selectAllAuthorsSet();
@@ -518,7 +495,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldExecuteSelectAllAuthorsUsingMapperClassThatReturnsVector() {
+  public void shouldExecuteSelectAllAuthorsUsingMapperClassThatReturnsVector() {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       Collection<Author> authors = mapper.selectAllAuthorsVector();
@@ -527,7 +504,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldExecuteSelectAllAuthorsUsingMapperClassThatReturnsLinkedList() {
+  public void shouldExecuteSelectAllAuthorsUsingMapperClassThatReturnsLinkedList() {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       Collection<Author> authors = mapper.selectAllAuthorsLinkedList();
@@ -536,7 +513,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldExecuteSelectAllAuthorsUsingMapperClassThatReturnsAnArray() {
+  public void shouldExecuteSelectAllAuthorsUsingMapperClassThatReturnsAnArray() {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       Author[] authors = mapper.selectAllAuthorsArray();
@@ -545,7 +522,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldExecuteSelectOneAuthorUsingMapperClassWithResultHandler() {
+  public void shouldExecuteSelectOneAuthorUsingMapperClassWithResultHandler() {
     try (SqlSession session = sqlMapper.openSession()) {
       DefaultResultHandler handler = new DefaultResultHandler();
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
@@ -555,19 +532,19 @@ class SqlSessionTest extends BaseDataTest {
     }
   }
 
-  @Test
-  void shouldFailExecutingAnAnnotatedMapperClassWithResultHandler() {
+  @Test(expected=BindingException.class)
+  public void shouldFailExecutingAnAnnotatedMapperClassWithResultHandler() {
     try (SqlSession session = sqlMapper.openSession()) {
       DefaultResultHandler handler = new DefaultResultHandler();
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
-      Assertions.assertThrows(BindingException.class, () -> {
-        mapper.selectAuthor2(101, handler);
-      });
+      mapper.selectAuthor2(101, handler);
+      Author author = (Author) handler.getResultList().get(0);
+      assertEquals(101, author.getId());
     }
   }
-
+  
   @Test
-  void shouldSelectAuthorsUsingMapperClassWithResultHandler() {
+  public void shouldSelectAuthorsUsingMapperClassWithResultHandler() {
     try (SqlSession session = sqlMapper.openSession()) {
       DefaultResultHandler handler = new DefaultResultHandler();
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
@@ -576,8 +553,8 @@ class SqlSessionTest extends BaseDataTest {
     }
   }
 
-  @Test
-  void shouldFailSelectOneAuthorUsingMapperClassWithTwoResultHandlers() {
+  @Test(expected = BindingException.class)
+  public void shouldFailSelectOneAuthorUsingMapperClassWithTwoResultHandlers() {
     Configuration configuration = new Configuration(sqlMapper.getConfiguration().getEnvironment());
     configuration.addMapper(AuthorMapperWithMultipleHandlers.class);
     SqlSessionFactory sqlMapperWithMultipleHandlers = new DefaultSqlSessionFactory(configuration);
@@ -585,12 +562,12 @@ class SqlSessionTest extends BaseDataTest {
       DefaultResultHandler handler1 = new DefaultResultHandler();
       DefaultResultHandler handler2 = new DefaultResultHandler();
       AuthorMapperWithMultipleHandlers mapper = sqlSession.getMapper(AuthorMapperWithMultipleHandlers.class);
-      Assertions.assertThrows(BindingException.class, () -> mapper.selectAuthor(101, handler1, handler2));
+      mapper.selectAuthor(101, handler1, handler2);
     }
   }
 
-  @Test
-  void shouldFailSelectOneAuthorUsingMapperClassWithTwoRowBounds() {
+  @Test(expected = BindingException.class)
+  public void shouldFailSelectOneAuthorUsingMapperClassWithTwoRowBounds() {
     Configuration configuration = new Configuration(sqlMapper.getConfiguration().getEnvironment());
     configuration.addMapper(AuthorMapperWithRowBounds.class);
     SqlSessionFactory sqlMapperWithMultipleHandlers = new DefaultSqlSessionFactory(configuration);
@@ -598,12 +575,12 @@ class SqlSessionTest extends BaseDataTest {
       RowBounds bounds1 = new RowBounds(0, 1);
       RowBounds bounds2 = new RowBounds(0, 1);
       AuthorMapperWithRowBounds mapper = sqlSession.getMapper(AuthorMapperWithRowBounds.class);
-      Assertions.assertThrows(BindingException.class, () -> mapper.selectAuthor(101, bounds1, bounds2));
+      mapper.selectAuthor(101, bounds1, bounds2);
     }
   }
 
   @Test
-  void shouldInsertAuthorUsingMapperClass() {
+  public void shouldInsertAuthorUsingMapperClass() {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       Author expected = new Author(500, "cbegin", "******", "cbegin@somewhere.com", "Something...", null);
@@ -619,7 +596,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldDeleteAuthorUsingMapperClass() {
+  public void shouldDeleteAuthorUsingMapperClass() {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       int count = mapper.deleteAuthor(101);
@@ -629,7 +606,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldUpdateAuthorUsingMapperClass() {
+  public void shouldUpdateAuthorUsingMapperClass() throws Exception {
     try (SqlSession session = sqlMapper.openSession()) {
       AuthorMapper mapper = session.getMapper(AuthorMapper.class);
       Author expected = mapper.selectAuthor(101);
@@ -642,7 +619,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectAllPostsUsingMapperClass() {
+  public void shouldSelectAllPostsUsingMapperClass() {
     try (SqlSession session = sqlMapper.openSession()) {
       BlogMapper mapper = session.getMapper(BlogMapper.class);
       List<Map> posts = mapper.selectAllPosts();
@@ -651,7 +628,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldLimitResultsUsingMapperClass() {
+  public void shouldLimitResultsUsingMapperClass() {
     try (SqlSession session = sqlMapper.openSession()) {
       BlogMapper mapper = session.getMapper(BlogMapper.class);
       List<Map> posts = mapper.selectAllPosts(new RowBounds(0, 2), null);
@@ -670,7 +647,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldHandleZeroParameters() {
+  public void shouldHandleZeroParameters() {
     try (SqlSession session = sqlMapper.openSession()) {
       final TestResultHandler resultHandler = new TestResultHandler();
       session.select("org.apache.ibatis.domain.blog.mappers.BlogMapper.selectAllPosts", resultHandler);
@@ -688,7 +665,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldStopResultHandler() {
+  public void shouldStopResultHandler() {
     try (SqlSession session = sqlMapper.openSession()) {
       final TestResultStopHandler resultHandler = new TestResultStopHandler();
       session.select("org.apache.ibatis.domain.blog.mappers.BlogMapper.selectAllPosts", null, resultHandler);
@@ -697,7 +674,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldOffsetAndLimitResultsUsingMapperClass() {
+  public void shouldOffsetAndLimitResultsUsingMapperClass() {
     try (SqlSession session = sqlMapper.openSession()) {
       BlogMapper mapper = session.getMapper(BlogMapper.class);
       List<Map> posts = mapper.selectAllPosts(new RowBounds(2, 3));
@@ -709,7 +686,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFindPostsAllPostsWithDynamicSql() {
+  public void shouldFindPostsAllPostsWithDynamicSql() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost");
       assertEquals(5, posts.size());
@@ -717,7 +694,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFindPostByIDWithDynamicSql() {
+  public void shouldFindPostByIDWithDynamicSql() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
           new HashMap<String, Integer>() {{
@@ -728,7 +705,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFindPostsInSetOfIDsWithDynamicSql() {
+  public void shouldFindPostsInSetOfIDsWithDynamicSql() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
           new HashMap<String, List<Integer>>() {{
@@ -743,7 +720,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFindPostsWithBlogIdUsingDynamicSql() {
+  public void shouldFindPostsWithBlogIdUsingDynamicSql() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
           new HashMap<String, Integer>() {{
@@ -754,7 +731,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFindPostsWithAuthorIdUsingDynamicSql() {
+  public void shouldFindPostsWithAuthorIdUsingDynamicSql() throws Exception {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
           new HashMap<String, Integer>() {{
@@ -765,7 +742,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFindPostsWithAuthorAndBlogIdUsingDynamicSql() {
+  public void shouldFindPostsWithAuthorAndBlogIdUsingDynamicSql() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
           new HashMap<String, Object>() {{
@@ -781,7 +758,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFindPostsInList() {
+  public void shouldFindPostsInList() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.selectPostIn",
           new ArrayList<Integer>() {{
@@ -794,7 +771,7 @@ class SqlSessionTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFindOddPostsInList() {
+  public void shouldFindOddPostsInList() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.selectOddPostsIn",
           new ArrayList<Integer>() {{
@@ -813,7 +790,7 @@ class SqlSessionTest extends BaseDataTest {
 
 
   @Test
-  void shouldSelectOddPostsInKeysList() {
+  public void shouldSelectOddPostsInKeysList() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.selectOddPostsInKeysList",
           new HashMap<String, List<Integer>>() {{put("keys",new ArrayList<Integer>() {{

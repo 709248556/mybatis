@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2017 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -23,16 +23,16 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.type.JdbcType;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Properties;
 
-class ConfigurationTest {
+public class ConfigurationTest {
 
   @Test
-  void applyDefaultValueOnXmlConfiguration() throws IOException {
+  public void applyDefaultValueOnXmlConfiguration() throws IOException {
 
     Properties props = new Properties();
     props.setProperty(PropertyParser.KEY_ENABLE_DEFAULT_VALUE, "true");
@@ -51,7 +51,7 @@ class ConfigurationTest {
   }
 
   @Test
-  void applyPropertyValueOnXmlConfiguration() throws IOException {
+  public void applyPropertyValueOnXmlConfiguration() throws IOException {
 
     Properties props = new Properties();
     props.setProperty(PropertyParser.KEY_ENABLE_DEFAULT_VALUE, "true");

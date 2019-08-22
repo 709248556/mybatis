@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,16 +24,16 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-class CamelCaseMappingTest {
+public class CamelCaseMappingTest {
 
   protected static SqlSessionFactory sqlSessionFactory;
 
-  @BeforeAll
-  static void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/camelcase/MapperConfig.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
@@ -43,21 +43,21 @@ class CamelCaseMappingTest {
   }
 
   @Test
-  void testList() {
+  public void testList() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       List<Camel> list = sqlSession.selectList("org.apache.ibatis.submitted.camel.doSelect");
-      Assertions.assertTrue(list.size() > 0);
-      Assertions.assertNotNull(list.get(0).getFirstName());
-      Assertions.assertNull(list.get(0).getLAST_NAME());
+      Assert.assertTrue(list.size() > 0);
+      Assert.assertNotNull(list.get(0).getFirstName());
+      Assert.assertNull(list.get(0).getLAST_NAME());
     }
   }
 
   @Test
-  void testMap() {
+  public void testMap() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       List<Map<String, Object>> list = sqlSession.selectList("org.apache.ibatis.submitted.camel.doSelectMap");
-      Assertions.assertTrue(list.size() > 0);
-      Assertions.assertTrue(list.get(0).containsKey("LAST_NAME"));
+      Assert.assertTrue(list.size() > 0);
+      Assert.assertTrue(list.get(0).containsKey("LAST_NAME"));
     }
   }
 

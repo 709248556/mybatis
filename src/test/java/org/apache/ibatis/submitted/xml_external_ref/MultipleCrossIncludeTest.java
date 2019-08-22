@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.submitted.xml_external_ref;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -32,22 +32,22 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-class MultipleCrossIncludeTest {
+public class MultipleCrossIncludeTest {
 
   @Test
-  void testMultipleCrossIncludeXmlConfig() throws Exception {
+  public void testMultipleCrossIncludeXmlConfig() throws Exception {
     testCrossReference(getSqlSessionFactoryXmlConfig());
   }
 
   @Test
-  void testMultipleCrossIncludeJavaConfig() throws Exception {
+  public void testMultipleCrossIncludeJavaConfig() throws Exception {
     testCrossReference(getSqlSessionFactoryJavaConfig());
   }
 
   @Test
-  void testMappedStatementCache() throws Exception {
+  public void testMappedStatementCache() throws Exception {
     try (Reader configReader = Resources.getResourceAsReader("org/apache/ibatis/submitted/xml_external_ref/MultipleCrossIncludeMapperConfig.xml")) {
       SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configReader);
 
@@ -62,13 +62,13 @@ class MultipleCrossIncludeTest {
     }
   }
 
-  private void testCrossReference(SqlSessionFactory sqlSessionFactory) {
+  private void testCrossReference(SqlSessionFactory sqlSessionFactory) throws Exception {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       MultipleCrossIncludePersonMapper personMapper = sqlSession.getMapper(MultipleCrossIncludePersonMapper.class);
       Person person = personMapper.select(1);
-      assertEquals((Integer) 1, person.getId());
+      assertEquals((Integer)1, person.getId());
       assertEquals(2, person.getPets().size());
-      assertEquals((Integer) 2, person.getPets().get(1).getId());
+      assertEquals((Integer)2, person.getPets().get(1).getId());
 
       Pet pet = personMapper.selectPet(1);
       assertEquals(Integer.valueOf(1), pet.getId());
