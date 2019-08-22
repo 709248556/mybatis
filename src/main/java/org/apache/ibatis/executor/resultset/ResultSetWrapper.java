@@ -38,19 +38,21 @@ public class ResultSetWrapper {
     private final ResultSet resultSet;
     private final TypeHandlerRegistry typeHandlerRegistry;
     /**
-     * 字段的名字的数组
+     * 字段的名字的数组,记录了ResultSet中每列的列名
      */
     private final List<String> columnNames = new ArrayList<>();
     /**
-     * 字段的 Java Type 的数组
+     * 字段的 Java Type 的数组,记录ResultSet中每列对应的Java类型
      */
     private final List<String> classNames = new ArrayList<>();
     /**
-     * 字段的 JdbcType 的数组
+     * 字段的 JdbcType 的数组,记录ResultSet中每列对应的JdbcType类型
      */
     private final List<JdbcType> jdbcTypes = new ArrayList<>();
     /**
      * TypeHandler 的映射
+     *
+     * 记录了每列对应的TypeHandler对象，key是71］名，value是TypeHandler集合
      *
      * KEY1：字段的名字
      * KEY2：Java 属性类型
@@ -59,12 +61,15 @@ public class ResultSetWrapper {
     /**
      * 有 mapped 的字段的名字的映射
      *
+     * 记录了被映射的71]名，其中key是ResultMap对象的时，value是该ResultMap对象映射的列名集
      * KEY：{@link #getMapKey(ResultMap, String)}
      * VALUE：字段的名字的数组
      */
     private final Map<String, List<String>> mappedColumnNamesMap = new HashMap<>();
     /**
      * 无 mapped 的字段的名字的映射
+     *
+     * 记录了未映射的列名，其中key是ResultMap对象的时，value是该ResultMap对象未映射的71］名集合
      *
      * 和 {@link #mappedColumnNamesMap} 相反
      */
@@ -74,12 +79,13 @@ public class ResultSetWrapper {
         this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
         this.resultSet = rs;
         // 遍历 ResultSetMetaData 的字段们，解析出 columnNames、jdbcTypes、classNames 属性
-        final ResultSetMetaData metaData = rs.getMetaData();
-        final int columnCount = metaData.getColumnCount();
+        final ResultSetMetaData metaData = rs.getMetaData();//获取ResultSet的元信息
+        final int columnCount = metaData.getColumnCount();//ResultSet中的列数
         for (int i = 1; i <= columnCount; i++) {
+            //获取列名或是通过”AS”关键字指定的别名
             columnNames.add(configuration.isUseColumnLabel() ? metaData.getColumnLabel(i) : metaData.getColumnName(i));
-            jdbcTypes.add(JdbcType.forCode(metaData.getColumnType(i)));
-            classNames.add(metaData.getColumnClassName(i));
+            jdbcTypes.add(JdbcType.forCode(metaData.getColumnType(i)));//该列的JdbcType类型
+            classNames.add(metaData.getColumnClassName(i));//该列对应的Java类型
         }
     }
 
@@ -174,6 +180,7 @@ public class ResultSetWrapper {
     }
 
     private void loadMappedAndUnmappedColumnNames(ResultMap resultMap, String columnPrefix) throws SQLException {
+      //mappedColumnNames和unmappedColumnNames分别记录ResultMap中映射的列名和未映射的列名
         List<String> mappedColumnNames = new ArrayList<>();
         List<String> unmappedColumnNames = new ArrayList<>();
         // 将 columnPrefix 转换成大写，并拼接到 resultMap.mappedColumns 属性上
@@ -192,11 +199,13 @@ public class ResultSetWrapper {
         mappedColumnNamesMap.put(getMapKey(resultMap, columnPrefix), mappedColumnNames);
         unMappedColumnNamesMap.put(getMapKey(resultMap, columnPrefix), unmappedColumnNames);
     }
-
+    //该方法返回指定ResultMap对象中明确映射的列名集合，同时会将该列名集合以及未映射的列名集合记录到mappedColumnNamesMap 和unMappedColumnNamesMap中缓存
     public List<String> getMappedColumnNames(ResultMap resultMap, String columnPrefix) throws SQLException {
         // 获得对应的 mapped 数组
+        //在mappedColumnNamesMap集合中查找被映射的列名，其中key是由ResultMap的id与列前级组成
         List<String> mappedColumnNames = mappedColumnNamesMap.get(getMapKey(resultMap, columnPrefix));
         if (mappedColumnNames == null) {
+            //未查找到指定ResultMap映射的列名，则加载后存入到mappedColumnNamesMap集合中
             // 初始化
             loadMappedAndUnmappedColumnNames(resultMap, columnPrefix);
             // 重新获得对应的 mapped 数组
