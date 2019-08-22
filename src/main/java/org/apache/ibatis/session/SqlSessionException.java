@@ -39,5 +39,4 @@ public class SqlSessionException extends PersistenceException {
   public SqlSessionException(Throwable cause) {
     super(cause);
   }
-
 }

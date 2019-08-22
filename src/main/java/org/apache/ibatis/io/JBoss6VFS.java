@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2018 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.io;
 
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -25,11 +22,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+
 /**
  * A {@link VFS} implementation that works with the VFS API provided by JBoss 6.
  *
- * 基于 JBoss 的 VFS 实现类
- * 
  * @author Ben Gunter
  */
 public class JBoss6VFS extends VFS {
@@ -111,7 +109,7 @@ public class JBoss6VFS extends VFS {
   /**
    * Verifies that the provided object reference is null. If it is null, then this VFS is marked
    * as invalid for the current environment.
-   * 
+   *
    * @param object The object reference to check for null.
    */
   protected static <T> T checkNotNull(T object) {
@@ -124,7 +122,7 @@ public class JBoss6VFS extends VFS {
   /**
    * Verifies that the return type of a method is what it is expected to be. If it is not, then
    * this VFS is marked as invalid for the current environment.
-   * 
+   *
    * @param method The method whose return type is to be checked.
    * @param expected A type to which the method's return type must be assignable.
    * @see Class#isAssignableFrom(Class)
