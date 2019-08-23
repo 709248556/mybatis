@@ -51,7 +51,7 @@ public class DefaultCursorTest {
   private Statement stmt;
 
   @SuppressWarnings("unchecked")
-//  @Test // add by 芋艿吗，临时去掉
+//  @Test // 临时去掉
   public void shouldCloseImmediatelyIfResultSetIsClosed() throws Exception {
     final MappedStatement ms = getNestedAndOrderedMappedStatement();
     final ResultMap rm = ms.getResultMaps().get(0);

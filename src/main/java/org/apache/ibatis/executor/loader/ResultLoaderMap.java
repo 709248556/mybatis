@@ -98,7 +98,7 @@ public class ResultLoaderMap {
         LoadPair pair = loaderMap.remove(property.toUpperCase(Locale.ENGLISH));
         // 执行加载
         if (pair != null) {
-            pair.load();
+            pair.load();//调用LoadPair.load（）方法执行延迟加载
             return true; // 加载成功
         }
         return false; // 加载失败
@@ -149,10 +149,14 @@ public class ResultLoaderMap {
         private final transient Object serializationCheck = new Object();
         /**
          * Meta object which sets loaded properties.
+         *
+         * 外层对象（一般是外层对象的代理对象）对应的MetaObject对象
          */
         private transient MetaObject metaResultObject;
         /**
          * Result loader which loads unread properties.
+         *
+         * 负责加载延迟加载属性的ResultLoader对象
          */
         private transient ResultLoader resultLoader;
         /**
@@ -165,10 +169,14 @@ public class ResultLoaderMap {
         private Class<?> configurationFactory;
         /**
          * Name of the unread property.
+         *
+         * 延迟加载的属性名称
          */
         private String property;
         /**
          * ID of SQL statement which loads the property.
+         *
+         * 用于加载属性的SQL语句的ID
          */
         private String mappedStatement;
         /**

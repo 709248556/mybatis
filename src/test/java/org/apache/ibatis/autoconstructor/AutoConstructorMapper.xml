@@ -22,11 +22,11 @@
 
 <mapper namespace="org.apache.ibatis.autoconstructor.AutoConstructorMapper">
 
-    <!-- add by 芋艿，用于测试 include 属性 -->
+    <!-- 用于测试 include 属性 -->
     <!--<resultMap id="B" type="Map" extends="A" />-->
     <!--<resultMap id="A" type="Map" />-->
 
-    <!-- add by 芋艿，用于测试 include 属性 -->
+    <!-- 用于测试 include 属性 -->
     <!--<sql id="123" lang="${cpu}">-->
         <!--${cpu}-->
         <!--aoteman-->

@@ -15,22 +15,11 @@
  */
 package org.apache.ibatis.executor.loader.cglib;
 
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-
-import org.apache.ibatis.executor.loader.AbstractEnhancedDeserializationProxy;
-import org.apache.ibatis.executor.loader.AbstractSerialStateHolder;
-import org.apache.ibatis.executor.loader.ProxyFactory;
-import org.apache.ibatis.executor.loader.ResultLoaderMap;
-import org.apache.ibatis.executor.loader.WriteReplaceInterface;
+import org.apache.ibatis.executor.loader.*;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -39,6 +28,12 @@ import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.property.PropertyCopier;
 import org.apache.ibatis.reflection.property.PropertyNamer;
 import org.apache.ibatis.session.Configuration;
+
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author Clinton Begin
@@ -119,8 +114,11 @@ public class CglibProxyFactory implements ProxyFactory {
 
     public static Object createProxy(Object target, ResultLoaderMap lazyLoader, Configuration configuration, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
       final Class<?> type = target.getClass();
+      //EnhancedResultOb〕ectProxyimpl本身就是Callback接口的实现
       EnhancedResultObjectProxyImpl callback = new EnhancedResultObjectProxyImpl(type, lazyLoader, configuration, objectFactory, constructorArgTypes, constructorArgs);
+      //调用CglibProxyFactory.crateProxy（）方法创建代理对象
       Object enhanced = crateProxy(type, callback, constructorArgTypes, constructorArgs);
+      //将target对象中的属，性值复制到代理对象的对应属性中
       PropertyCopier.copyBeanProperties(type, target, enhanced);
       return enhanced;
     }
@@ -130,7 +128,7 @@ public class CglibProxyFactory implements ProxyFactory {
       final String methodName = method.getName();
       try {
         synchronized (lazyLoader) {
-          if (WRITE_REPLACE_METHOD.equals(methodName)) {
+          if (WRITE_REPLACE_METHOD.equals(methodName)) {//用的方法名为”writeReplace”的相关处理
             Object original;
             if (constructorArgTypes.isEmpty()) {
               original = objectFactory.create(type);
@@ -144,22 +142,25 @@ public class CglibProxyFactory implements ProxyFactory {
               return original;
             }
           } else {
+            //检测是否存在延迟加载的属性，以及调用方法名是否为"finalize"
             if (lazyLoader.size() > 0 && !FINALIZE_METHOD.equals(methodName)) {
+              //如采aggressiveLazyLoad工ng自己主项为true，或是调用方法的名称存在于lazyLoadTriggerMethods列表中，则将全部的属性都加载完成
               if (aggressive || lazyLoadTriggerMethods.contains(methodName)) {
                 lazyLoader.loadAll();
               } else if (PropertyNamer.isSetter(methodName)) {
                 final String property = PropertyNamer.methodToProperty(methodName);
                 lazyLoader.remove(property);
               } else if (PropertyNamer.isGetter(methodName)) {
+                //如采调用了某属性的getter方法，先获取该属性的名称
                 final String property = PropertyNamer.methodToProperty(methodName);
-                if (lazyLoader.hasLoader(property)) {
-                  lazyLoader.load(property);
+                if (lazyLoader.hasLoader(property)) {//检测是否为延迟加载的局性
+                  lazyLoader.load(property);//触发该属性的加载操作
                 }
               }
             }
           }
         }
-        return methodProxy.invokeSuper(enhanced, args);
+        return methodProxy.invokeSuper(enhanced, args);//调用目标对象的方法
       } catch (Throwable t) {
         throw ExceptionUtil.unwrapThrowable(t);
       }

@@ -515,7 +515,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
 
     /** Backward compatibility signature */
-    @Deprecated // add by 芋艿 保持兼容，目前未调用
+    @Deprecated // add by 保持兼容，目前未调用
     public ResultMapping buildResultMapping(
             Class<?> resultType,
             String property,
@@ -551,7 +551,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
 
     /** Backward compatibility signature */
-    @Deprecated // add by 芋艿 保持兼容，目前未调用
+    @Deprecated //保持兼容，目前未调用
     public MappedStatement addMappedStatement(
             String id,
             SqlSource sqlSource,

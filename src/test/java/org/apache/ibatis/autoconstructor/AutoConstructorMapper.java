@@ -35,15 +35,15 @@ public interface AutoConstructorMapper {
 
     PrimitiveSubject testResultMap(Map<String, Object> map);
 
-    PrimitiveSubject getSubject2(@Param("id") final int id); // add by 芋艿
+    PrimitiveSubject getSubject2(@Param("id") final int id); //
 
-    PrimitiveSubject getSubject3(@Param("id") final int id); // add by 芋艿
+    PrimitiveSubject getSubject3(@Param("id") final int id); //
 
-    PrimitiveSubject getSubject4(@Param("id") final Integer id); // add by 芋艿
+    PrimitiveSubject getSubject4(@Param("id") final Integer id); //
 
-    PrimitiveSubject getSubject5(String name, Integer age); // add by 芋艿
+    PrimitiveSubject getSubject5(String name, Integer age); //
 
-    List<PrimitiveSubject> getSubjectList(@Param("ids") List<Integer> ids); // add by 芋艿
+    List<PrimitiveSubject> getSubjectList(@Param("ids") List<Integer> ids); //
 
     // ========== AnnotatedSubject ==========
 

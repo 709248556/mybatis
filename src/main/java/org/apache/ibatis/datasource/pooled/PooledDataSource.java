@@ -541,7 +541,7 @@ public class PooledDataSource implements DataSource {
                     // 通过 ping 来测试连接是否有效
                     if (conn.isValid()) {
                         // 如果非自动提交的，需要进行回滚。即将原有执行中的事务，全部回滚。
-                        // 这里又执行了一次，有点奇怪。目前猜测，是不是担心上一次适用方忘记提交或回滚事务 TODO 1002 芋艿
+                        // 这里又执行了一次，有点奇怪。目前猜测，是不是担心上一次适用方忘记提交或回滚事务
                         if (!conn.getRealConnection().getAutoCommit()) {
                             conn.getRealConnection().rollback();
                         }

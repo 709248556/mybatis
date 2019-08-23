@@ -30,7 +30,7 @@ public class RichType {
 
     private Map richMap = new HashMap();
 
-    private List<String> aoteman = new ArrayList<>(); // add by 芋艿
+    private List<String> aoteman = new ArrayList<>();
 
     private List richList = new ArrayList() {
         {

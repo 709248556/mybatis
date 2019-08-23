@@ -229,19 +229,23 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             resultSetCount++;
         }
 
-        // 因为 `mappedStatement.resultSets` 只在存储过程中使用，暂时不考虑，忽略即可
+        // 存储过程中使用，获取MappedStatement.resultSets属性，该属性列出了多结采集的所有名称，名称之间用逗号分隔
         String[] resultSets = mappedStatement.getResultSets();
         if (resultSets != null) {
             while (rsw != null && resultSetCount < resultSets.length) {
+              //根据resultSet的名称，获取未处理的ResultMapping
                 ResultMapping parentMapping = nextResultMaps.get(resultSets[resultSetCount]);
                 if (parentMapping != null) {
+                  //获取映射该结采集要使用的ResultMap对象
                     String nestedResultMapId = parentMapping.getNestedResultMapId();
                     ResultMap resultMap = configuration.getResultMap(nestedResultMapId);
+                    //根据ResultMap对象映射该结果集
                     handleResultSet(rsw, resultMap, null, parentMapping);
                 }
-                rsw = getNextResultSet(stmt);
+                rsw = getNextResultSet(stmt);//获取下一个结果集
+                //清空nestedResultObjects集合，为映射下一个结果集做准备
                 cleanUpAfterHandlingResultSet();
-                resultSetCount++;
+                resultSetCount++;//
             }
         }
 
@@ -434,7 +438,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private void storeObject(ResultHandler<?> resultHandler, DefaultResultContext<Object> resultContext, Object rowValue, ResultMapping parentMapping, ResultSet rs) throws SQLException {
         // 暂时忽略，这个情况，只有存储过程会出现
         if (parentMapping != null) {
-          //嵌套查询或嵌套映射，将结采对象保存到父对象对应的属性中
+          //嵌套查询或嵌套映射，将结果对象保存到父对象对应的属性中
             linkToParents(rs, parentMapping, rowValue);
         } else {
             callResultHandler(resultHandler, resultContext, rowValue);
@@ -683,13 +687,17 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
     // 存储过程相关，忽略
     private void addPendingChildRelation(ResultSet rs, MetaObject metaResultObject, ResultMapping parentMapping) throws SQLException {
+        //为指定结果集创建CacheKey对象
         CacheKey cacheKey = createKeyForMultipleResults(rs, parentMapping, parentMapping.getColumn(), parentMapping.getColumn());
+        //创建PendingRelation对象
         PendingRelation deferLoad = new PendingRelation();
         deferLoad.metaObject = metaResultObject;
         deferLoad.propertyMapping = parentMapping;
+        //将PendingRelation对象添加到pendingRelations集合缓存
         List<PendingRelation> relations = pendingRelations.computeIfAbsent(cacheKey, k -> new ArrayList<>());
         // issue #255
         relations.add(deferLoad);
+        //在nextResultMaps集合记录指定属性对应的结采集名称以及对应的ResultMapping对象
         ResultMapping previous = nextResultMaps.get(parentMapping.getResultSet());
         if (previous == null) {
             nextResultMaps.put(parentMapping.getResultSet(), parentMapping);
@@ -705,12 +713,14 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         CacheKey cacheKey = new CacheKey();
         cacheKey.update(resultMapping);
         if (columns != null && names != null) {
+          //／按照逗号切分列名
             String[] columnsArray = columns.split(",");
             String[] namesArray = names.split(",");
             for (int i = 0; i < columnsArray.length; i++) {
+              //查询该行记录对应列的位
                 Object value = rs.getString(columnsArray[i]);
                 if (value != null) {
-                    cacheKey.update(namesArray[i]);
+                    cacheKey.update(namesArray[i]);//添加列名和列值
                     cacheKey.update(value);
                 }
             }
@@ -906,7 +916,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private Object getNestedQueryConstructorValue(ResultSet rs, ResultMapping constructorMapping, String columnPrefix) throws SQLException {
         // 获得内嵌查询的编号
         final String nestedQueryId = constructorMapping.getNestedQueryId();
-        // 获得内嵌查询的 MappedStatement 对象
+        // 获得内嵌查询编号对应的 MappedStatement 对象
         final MappedStatement nestedQuery = configuration.getMappedStatement(nestedQueryId);
         // 获得内嵌查询的参数类型
         final Class<?> nestedQueryParameterType = nestedQuery.getParameterMap().getType();
@@ -1098,13 +1108,13 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     // HANDLE NESTED RESULT MAPS
     //
 
+    //todo P262页有步骤详情
     private void handleRowValuesForNestedResultMap(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {
         // 创建 DefaultResultContext 对象
         final DefaultResultContext<Object> resultContext = new DefaultResultContext<>();
         // 获得 ResultSet 对象，并跳到 rowBounds 指定的开始位置
         ResultSet resultSet = rsw.getResultSet();
         skipRows(resultSet, rowBounds);
-        // TODO 芋艿
         Object rowValue = previousRowValue;
         // 循环
         while (shouldProcessMoreRows(resultContext, rowBounds) // 是否继续处理 ResultSet
@@ -1112,7 +1122,6 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                 && resultSet.next()) { // ResultSet 是否还有下一条
             // 根据该行记录以及 ResultMap.discriminator ，决定映射使用的 ResultMap 对象
             final ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
-            // TODO 芋艿
             final CacheKey rowKey = createRowKey(discriminatedResultMap, rsw, null);
             Object partialObject = nestedResultObjects.get(rowKey);
             // issue #577 && #542
@@ -1285,7 +1294,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     //
     // UNIQUE RESULT KEY
     //
-
+  //主要负责生成CacheKey
     private CacheKey createRowKey(ResultMap resultMap, ResultSetWrapper rsw, String columnPrefix) throws SQLException {
         final CacheKey cacheKey = new CacheKey();
         cacheKey.update(resultMap.getId());

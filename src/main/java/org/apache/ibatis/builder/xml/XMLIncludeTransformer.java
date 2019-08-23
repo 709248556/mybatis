@@ -80,7 +80,7 @@ public class XMLIncludeTransformer {
             source.getParentNode().replaceChild(toInclude, source); // 注意，这是一个奇葩的 API ，前者为 newNode ，后者为 oldNode
             // 将 <sql /> 子节点添加到 <sql /> 节点前面
             while (toInclude.hasChildNodes()) {
-                toInclude.getParentNode().insertBefore(toInclude.getFirstChild(), toInclude); // 这里有个点，一定要注意，卡了艿艿很久。当子节点添加到其它节点下面后，这个子节点会不见了，相当于是“移动操作”
+                toInclude.getParentNode().insertBefore(toInclude.getFirstChild(), toInclude); // 这里有个点，一定要注意，卡了很久。当子节点添加到其它节点下面后，这个子节点会不见了，相当于是“移动操作”
             }
             // 移除 <include /> 标签自身
             toInclude.getParentNode().removeChild(toInclude);

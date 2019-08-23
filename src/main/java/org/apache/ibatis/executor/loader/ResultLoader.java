@@ -41,25 +41,28 @@ import java.util.List;
 public class ResultLoader {
 
     protected final Configuration configuration;
-    protected final Executor executor;
+    protected final Executor executor;//用于执行延迟加载操作的Executor对象
+    //记录了延迟执行的SQL语句以及相关配置信息
     protected final MappedStatement mappedStatement;
+    protected final BoundSql boundSql;
     /**
-     * 查询的参数对象
+     * 记录了延迟执行的SQL语句的实参
      */
     protected final Object parameterObject;
     /**
-     * 结果的类型
+     * 记录了延迟加载得到的对象类型
      */
     protected final Class<?> targetType;
+    //ObjectFactory工厂对象，通过反射创建延迟加载的Java对象
     protected final ObjectFactory objectFactory;
-    protected final CacheKey cacheKey;
-    protected final BoundSql boundSql;
+    protected final CacheKey cacheKey;// CacheKey对象
+
     /**
-     * ResultExtractor 对象
+     * ResultExtractor负责将延迟加载得到的结采对象转换成targetType类型的对象
      */
     protected final ResultExtractor resultExtractor;
     /**
-     * 创建 ResultLoader 对象时，所在的线程
+     * 创建 ResultLoader 对象时，所在的线程id
      */
     protected final long creatorThreadId;
 
@@ -68,7 +71,7 @@ public class ResultLoader {
      */
     protected boolean loaded;
     /**
-     * 查询的结果对象
+     * 延迟加载得到的结果对象
      */
     protected Object resultObject;
 
@@ -93,9 +96,9 @@ public class ResultLoader {
      * @return 结果
      */
     public Object loadResult() throws SQLException {
-        // 查询结果
+        // 查询结果,执行延迟加载，得到结果对象，并以List的形式返回
         List<Object> list = selectList();
-        // 提取结果
+        // 提取结果,将list集合转换成targetType指定类型的对象
         resultObject = resultExtractor.extractObjectFromList(list, targetType);
         // 返回结果
         return resultObject;
@@ -110,6 +113,8 @@ public class ResultLoader {
     private <E> List<E> selectList() throws SQLException {
         // 获得 Executor 对象
         Executor localExecutor = executor;
+        //检测调用该方法的线程是否为创建ResultLoader对象的线程、检测localExecutor是否关闭，
+        //检测到异常情况时，会创建新的Executor对象来执行延迟加载操作
         if (Thread.currentThread().getId() != this.creatorThreadId || localExecutor.isClosed()) {
             localExecutor = newExecutor();
         }

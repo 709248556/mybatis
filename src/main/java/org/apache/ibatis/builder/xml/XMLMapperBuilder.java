@@ -254,7 +254,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
     // FROM 《MyBatis 官方文档 —— Mapper XML 文件》http://www.mybatis.org/mybatis-3/zh/sqlmap-xml.html
     // 已废弃！老式风格的参数映射。内联参数是首选,这个元素可能在将来被移除，这里不会记录。
-    @Deprecated // add by 芋艿
+    @Deprecated // add by
     private void parameterMapElement(List<XNode> list) throws Exception {
         for (XNode parameterMapNode : list) {
             String id = parameterMapNode.getStringAttribute("id");

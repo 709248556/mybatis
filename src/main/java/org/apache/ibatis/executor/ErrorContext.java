@@ -36,7 +36,6 @@ public class ErrorContext {
     private ErrorContext() {
     }
 
-    //TODO 多线程没有错误吗？
     public static ErrorContext instance() {
         ErrorContext context = LOCAL.get();
         if (context == null) {

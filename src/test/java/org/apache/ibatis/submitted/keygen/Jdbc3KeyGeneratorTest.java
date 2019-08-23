@@ -240,7 +240,7 @@ public class Jdbc3KeyGeneratorTest {
     }
 
     @Test
-    public void shouldFailIfKeyPropertyIsInvalid_WrongParamName2() throws Exception { // add by 芋艿
+    public void shouldFailIfKeyPropertyIsInvalid_WrongParamName2() throws Exception {
         try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
             try {
                 CountryMapper mapper = sqlSession.getMapper(CountryMapper.class);
