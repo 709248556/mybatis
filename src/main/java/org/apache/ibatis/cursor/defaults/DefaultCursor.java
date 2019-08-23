@@ -171,6 +171,7 @@ public class DefaultCursor<T> implements Cursor<T> {
             status = CursorStatus.OPEN;
             // 遍历下一条记录
             if (!rsw.getResultSet().isClosed()) {
+              //这里会将映射得到的结果对象保存到ObjectWrapperResultHandler.result字段中
                 resultSetHandler.handleRowValues(rsw, resultMap, objectWrapperResultHandler, RowBounds.DEFAULT, null);
             }
         } catch (SQLException e) {
@@ -178,10 +179,10 @@ public class DefaultCursor<T> implements Cursor<T> {
         }
 
         // 复制给 next
-        T next = objectWrapperResultHandler.result;
+        T next = objectWrapperResultHandler.result;//获取结果对象
         // 增加 indexWithRowBound
         if (next != null) {
-            indexWithRowBound++;
+            indexWithRowBound++;//统计返回的结果对象数量
         }
         // No more object or limit reached
         // 没有更多记录，或者到达 rowBounds 的限制索引位置，则关闭游标，并设置状态为 CursorStatus.CONSUMED
@@ -255,7 +256,7 @@ public class DefaultCursor<T> implements Cursor<T> {
 
             // 如果 next 为空，则遍历下一条记录
             if (next == null) {
-                next = fetchNextUsingRowBound();
+                next = fetchNextUsingRowBound();//对结果集进行映射的核心
             }
 
             // 如果 next 非空，说明有记录，则进行返回
@@ -263,7 +264,7 @@ public class DefaultCursor<T> implements Cursor<T> {
                 // 置空 object 对象
                 object = null;
                 // 增加 iteratorIndex
-                iteratorIndex++;
+                iteratorIndex++;//／记录返回果对象的个数
                 // 返回 next
                 return next;
             }

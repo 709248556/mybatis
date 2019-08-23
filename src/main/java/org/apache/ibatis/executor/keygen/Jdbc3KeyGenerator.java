@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * 基于 {@link Statement#getGeneratedKeys()} 的 KeyGenerator 实现类
  *
- * 目前适用的有，MySQL、H2 等等
+ * 目前适用的有，MySQL、H2 等等,取回数据库生成的自增id
  *
  * @author Clinton Begin
  * @author Kazuki Shimizu
@@ -62,6 +62,7 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
 
     @Override
     public void processAfter(Executor executor, MappedStatement ms, Statement stmt, Object parameter) {
+      //将用户传入的实参parameter封装成集合类型，然后传入processBatch （）方法中处理
         processBatch(ms, stmt, parameter);
     }
 

@@ -27,10 +27,10 @@ import java.sql.Statement;
  */
 public interface KeyGenerator {
 
-    // SQL 执行前
+    // 在执行insert之前执行，设置属性order＝”BEFORE”
     void processBefore(Executor executor, MappedStatement ms, Statement stmt, Object parameter);
 
-    // SQL 执行后
+    // 在执行insert之后执行，设置属性order＝”AFTER”
     void processAfter(Executor executor, MappedStatement ms, Statement stmt, Object parameter);
 
 }
