@@ -28,6 +28,7 @@ import java.util.List;
 /**
  * Statement 处理器，其中 Statement 包含 java.sql.Statement、java.sql.PreparedStatement、java.sql.CallableStatement 三种。
  *
+ * StatementHandler接口中的功能很多，例如创建Statement对象，为SQL语句绑定实参，执行select、insert、update、delete等多种类型的SQL语句，批量执行SQL语句，将结果集映射成结果对象
  * @author Clinton Begin
  */
 public interface StatementHandler {
@@ -42,7 +43,7 @@ public interface StatementHandler {
     Statement prepare(Connection connection, Integer transactionTimeout) throws SQLException;
 
     /**
-     * 设置 Statement 对象的参数
+     * 绑定statement执行时所需的实参
      *
      * @param statement Statement 对象
      */
@@ -56,7 +57,7 @@ public interface StatementHandler {
     void batch(Statement statement) throws SQLException;
 
     /**
-     * 执行写操作
+     * 执行update/insert/delete语句
      *
      * @param statement Statement 对象
      * @return 影响的条数
@@ -64,7 +65,7 @@ public interface StatementHandler {
     int update(Statement statement) throws SQLException;
 
     /**
-     * 执行读操作
+     * 执行select语句
      *
      * @param statement Statement 对象
      * @param resultHandler ResultHandler 对象，处理结果
@@ -88,6 +89,8 @@ public interface StatementHandler {
     BoundSql getBoundSql();
 
     /**
+     * 获取其中封装的ParameterHandler
+     *
      * @return ParameterHandler 对象
      */
     ParameterHandler getParameterHandler();

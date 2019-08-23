@@ -40,7 +40,7 @@ public interface Executor {
     // 更新 or 插入 or 删除，由传入的 MappedStatement 的 SQL 所决定
     int update(MappedStatement ms, Object parameter) throws SQLException;
 
-    // 查询，带 ResultHandler + CacheKey + BoundSql
+    // 查询，带 ResultHandler + CacheKey + BoundSql,返回位分为结果对象列表或游标对象
     <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey cacheKey, BoundSql boundSql) throws SQLException;
     // 查询，带 ResultHandler
     <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException;
@@ -59,10 +59,10 @@ public interface Executor {
     CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql);
     // 判断是否缓存
     boolean isCached(MappedStatement ms, CacheKey key);
-    // 清除本地缓存
+    // 清空一级缓存
     void clearLocalCache();
 
-    // 延迟加载
+    // 延迟加载一级缓存中的数据，DeferredLoad的相关内容后面会详细介绍
     void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType);
 
     // 获得事务

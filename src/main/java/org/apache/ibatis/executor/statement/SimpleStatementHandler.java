@@ -53,9 +53,9 @@ public class SimpleStatementHandler extends BaseStatementHandler {
         if (keyGenerator instanceof Jdbc3KeyGenerator) {
             // 执行写操作
             statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
-            // 获得更新数量
+            // 获取受影响的行数
             rows = statement.getUpdateCount();
-            // 执行 keyGenerator 的后置处理逻辑
+            // 将数据库生成的主键添加到parameterObject中
             keyGenerator.processAfter(executor, mappedStatement, statement, parameterObject);
         // 如果是 SelectKeyGenerator 类型
         } else if (keyGenerator instanceof SelectKeyGenerator) {
@@ -83,7 +83,7 @@ public class SimpleStatementHandler extends BaseStatementHandler {
 
     @Override
     public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
-        String sql = boundSql.getSql();
+        String sql = boundSql.getSql();//获取SQL语句
         // 执行查询
         statement.execute(sql);
         // 处理返回结果
@@ -102,6 +102,7 @@ public class SimpleStatementHandler extends BaseStatementHandler {
     @Override
     protected Statement instantiateStatement(Connection connection) throws SQLException {
         if (mappedStatement.getResultSetType() == ResultSetType.DEFAULT) {
+          //设置结果集是否可以滚动及其游标是否可以上下移动，设置结果集是否可更新
             return connection.createStatement();
         } else {
             return connection.createStatement(mappedStatement.getResultSetType().getValue(), ResultSet.CONCUR_READ_ONLY);

@@ -43,14 +43,18 @@ public abstract class BaseStatementHandler implements StatementHandler {
     protected final Configuration configuration;
     protected final ObjectFactory objectFactory;
     protected final TypeHandlerRegistry typeHandlerRegistry;
+    //记录使用的ResultSetHandler对象，它的主要功能是将结果集映射成结果对象
     protected final ResultSetHandler resultSetHandler;
+    //记录使用的ParameterHandler对象，ParameterHandler的主要功能是为SQL语句绑定实参，也就是使用传入的实参替换SQLt吾句的中’？”占位符
     protected final ParameterHandler parameterHandler;
-
     protected final Executor executor;
-    protected final MappedStatement mappedStatement;
+
+    //RowBounds记录了用户设置的offset和lim工t，用于在结采集中定位映射的起始位置和结束位置
     protected final RowBounds rowBounds;
 
+    //记录SQL语句对应的MappedStatement和BoundSql对象
     protected BoundSql boundSql;
+    protected final MappedStatement mappedStatement;
 
     protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         // 获得 Configuration 对象
@@ -66,7 +70,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
 
         // 如果 boundSql 非空，一般是写类操作，例如：insert、update、delete ，则先获得自增主键，然后再创建 BoundSql 对象
         if (boundSql == null) { // issue #435, get the key before calculating the statement
-            // 获得自增主键
+            // 调用KeyGenerator.processBefore（）方法获取主键
             generateKeys(parameterObject);
             // 创建 BoundSql 对象
             boundSql = mappedStatement.getBoundSql(parameterObject);

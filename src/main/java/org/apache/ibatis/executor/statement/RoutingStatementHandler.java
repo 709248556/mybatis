@@ -39,8 +39,9 @@ public class RoutingStatementHandler implements StatementHandler {
     /**
      * 被委托的 StatementHandler 对象
      */
-    private final StatementHandler delegate;
+    private final StatementHandler delegate; //底层封装的真正的StatementHandler对象
 
+    //RoutingStatementHandler的主要功能就是根据MappedStateme口t的配置，生成一个对应的StatementHandler对象，并设置到delegate字段中
     public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         // 根据不同的类型，创建对应的 StatementHandler 实现类
         switch (ms.getStatementType()) {

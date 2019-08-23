@@ -40,17 +40,18 @@ import java.util.List;
  */
 public class DefaultParameterHandler implements ParameterHandler {
 
+    //管理MyBatis中的全部TypeHandler对象
     private final TypeHandlerRegistry typeHandlerRegistry;
     /**
-     * MappedStatement 对象
+     * MappedStatement 对象,其中记录SQL节点相应的配置信息
      */
     private final MappedStatement mappedStatement;
     /**
-     * 参数对象
+     * 用户传入的实参对象
      */
     private final Object parameterObject;
     /**
-     * BoundSql 对象
+     * 对应的BoundSql对象，需妥设置参数的PreparedStatement对象，就是根据该BoundSql中记录的SQL语句创建的，BoundSql中也记录了对应参数的名称和相关属性
      */
     private final BoundSql boundSql;
     private final Configuration configuration;
@@ -72,27 +73,29 @@ public class DefaultParameterHandler implements ParameterHandler {
     @Override
     public void setParameters(PreparedStatement ps) {
         ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
-        // 遍历 ParameterMapping 数组
+        // 取出sql中的参数映射列表
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         if (parameterMappings != null) {
             for (int i = 0; i < parameterMappings.size(); i++) {
                 // 获得 ParameterMapping 对象
                 ParameterMapping parameterMapping = parameterMappings.get(i);
+                //过滤掉存储过程中的输出参数
                 if (parameterMapping.getMode() != ParameterMode.OUT) {
-                    // 获得值
+                    // 记录绑定的实参
                     Object value;
-                    String propertyName = parameterMapping.getProperty();
+                    String propertyName = parameterMapping.getProperty();//获取参数名称
                     if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
-                        value = boundSql.getAdditionalParameter(propertyName);
-                    } else if (parameterObject == null) {
+                        value = boundSql.getAdditionalParameter(propertyName);//获取对应的实参位
+                    } else if (parameterObject == null) { //整个实参为空
                         value = null;
                     } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
-                        value = parameterObject;
+                        value = parameterObject;//实参可以直接通过TypeHandler转换成JdbcType
                     } else {
+                      //获取对象中相应的属性位或查找Map对象中位
                         MetaObject metaObject = configuration.newMetaObject(parameterObject);
                         value = metaObject.getValue(propertyName);
                     }
-                    // 获得 typeHandler、jdbcType 属性
+                    // 获取ParameterMapping中设置的TypeHandler对象
                     TypeHandler typeHandler = parameterMapping.getTypeHandler();
                     JdbcType jdbcType = parameterMapping.getJdbcType();
                     if (value == null && jdbcType == null) {

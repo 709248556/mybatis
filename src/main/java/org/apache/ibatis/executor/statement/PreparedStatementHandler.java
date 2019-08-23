@@ -85,8 +85,9 @@ public class PreparedStatementHandler extends BaseStatementHandler {
         if (mappedStatement.getKeyGenerator() instanceof Jdbc3KeyGenerator) {
             String[] keyColumnNames = mappedStatement.getKeyColumns();
             if (keyColumnNames == null) {
-                return connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+                return connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);//返回数据库生成的主键
             } else {
+                //在insert语句执行完成之后，会将keyColumnNames指定的列返回
                 return connection.prepareStatement(sql, keyColumnNames);
             }
         } else if (mappedStatement.getResultSetType() == ResultSetType.DEFAULT) {
