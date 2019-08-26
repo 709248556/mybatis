@@ -46,8 +46,8 @@ import java.util.*;
  */
 public class DefaultSqlSession implements SqlSession {
 
-    private final Configuration configuration;
-    private final Executor executor;
+    private final Configuration configuration;//Configuration配置对象
+    private final Executor executor;//底层依赖的Executor对象
 
     /**
      * 是否自动提交事务
@@ -56,7 +56,7 @@ public class DefaultSqlSession implements SqlSession {
     /**
      * 是否发生数据变更
      */
-    private boolean dirty;
+    private boolean dirty;//当前缓存中是否有脏数据
     /**
      * Cursor 数组
      */

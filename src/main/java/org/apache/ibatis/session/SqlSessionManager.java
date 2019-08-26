@@ -36,13 +36,14 @@ import java.util.Properties;
  */
 public class SqlSessionManager implements SqlSessionFactory, SqlSession {
 
-    private final SqlSessionFactory sqlSessionFactory;
+    private final SqlSessionFactory sqlSessionFactory;//底层封笨的SqlSessionFactory对象
+    //localSqlSession中记录的SqlSession对象的代理对象，在SqlSessionManager初始化时，会使用JDK动态代理的方式为localSqlSession创建代理对象
     private final SqlSession sqlSessionProxy;
 
     /**
      * 线程变量，当前线程的 SqlSession 对象
      */
-    private final ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
+    private final ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();//ThreadLocal变量，记录一个与当前线希呈绑定的SqlSession对象
 
     private SqlSessionManager(SqlSessionFactory sqlSessionFactory) {
         this.sqlSessionFactory = sqlSessionFactory;
@@ -352,8 +353,9 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             // 情况一，如果 localSqlSession 中存在 SqlSession 对象，说明是自管理模式
+            //获取当前线程绑定的SqlSession对象
             final SqlSession sqlSession = SqlSessionManager.this.localSqlSession.get();
-            if (sqlSession != null) {
+            if (sqlSession != null) {//第二种模式
                 try {
                     // 直接执行方法
                     return method.invoke(sqlSession, args);

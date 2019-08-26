@@ -88,13 +88,13 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
     private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
         Transaction tx = null;
         try {
-            // 获得 Environment 对象
+            // 获取mybatis-config.xml配置文件中配置的Environment对象
             final Environment environment = configuration.getEnvironment();
             // 创建 Transaction 对象
             final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
             tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
             // 创建 Executor 对象
-            final Executor executor = configuration.newExecutor(tx, execType);
+            final Executor executor = configuration.newExecutor(tx, execType) ;
             // 创建 DefaultSqlSession 对象
             return new DefaultSqlSession(configuration, executor, autoCommit);
         } catch (Exception e) {
@@ -111,13 +111,15 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
             // 获得是否可以自动提交
             boolean autoCommit;
             try {
+                //获取当前连接的事务是否为自动提交方式
                 autoCommit = connection.getAutoCommit();
             } catch (SQLException e) {
                 // Failover to true, as most poor drivers
                 // or databases won't support transactions
+                //当前数据库驱动提供的连接不支持事务，则可能会抛出异常
                 autoCommit = true;
             }
-            // 获得 Environment 对象
+            // 获取mybatisconfig. xml配置文件中配置的Environment对象
             final Environment environment = configuration.getEnvironment();
             // 创建 Transaction 对象
             final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
