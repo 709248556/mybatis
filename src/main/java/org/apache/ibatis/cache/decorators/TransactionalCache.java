@@ -31,9 +31,9 @@ import java.util.concurrent.locks.ReadWriteLock;
  * 支持事务的 Cache 实现类，主要用于二级缓存中。
  *
  * This class holds all cache entries that are to be added to the 2nd level cache during a Session.
- * Entries are sent to the cache when commit is called or discarded if the Session is rolled back. 
- * Blocking cache support has been added. Therefore any get() that returns a cache miss 
- * will be followed by a put() so any lock associated with the key can be released. 
+ * Entries are sent to the cache when commit is called or discarded if the Session is rolled back.
+ * Blocking cache support has been added. Therefore any get() that returns a cache miss
+ * will be followed by a put() so any lock associated with the key can be released.
  *
  * @author Clinton Begin
  * @author Eduardo Macarron
@@ -57,10 +57,14 @@ public class TransactionalCache implements Cache {
     private boolean clearOnCommit;
     /**
      * 待提交的 KV 映射
+     *
+     * 暂时记录添加到TransactionalCache中的数据。在事务提交时，会将其中的数据添加到二级後存中
      */
     private final Map<Object, Object> entriesToAddOnCommit;
     /**
      * 查找不到的 KEY 集合
+     *
+     * 记录缓存未命中的CacheKey对象
      */
     private final Set<Object> entriesMissedInCache;
 
@@ -108,7 +112,7 @@ public class TransactionalCache implements Cache {
     @Override
     public void putObject(Object key, Object object) {
         // 暂存 KV 到 entriesToAddOnCommit 中
-        entriesToAddOnCommit.put(key, object);
+        entriesToAddOnCommit.put(key, object);//将缓存项暂存在entriesToAddOnCommit集合中
     }
 
     @Override
@@ -125,11 +129,11 @@ public class TransactionalCache implements Cache {
     }
 
     public void commit() {
-        // 如果 clearOnCommit 为 true ，则清空 delegate 缓存
+        //在事务提交前，清空二级缓存
         if (clearOnCommit) {
             delegate.clear();
         }
-        // 将 entriesToAddOnCommit、entriesMissedInCache 刷入 delegate 中
+        // 将 entriesToAddOnCommit、entriesMissedInCache 刷入二级缓存中
         flushPendingEntries();
         // 重置
         reset();

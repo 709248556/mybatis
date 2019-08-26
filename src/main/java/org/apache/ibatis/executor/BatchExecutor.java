@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * 批量执行的 Executor 实现类
  *
- * @author Jeff Butler 
+ * @author Jeff Butler
  */
 public class BatchExecutor extends BaseExecutor {
 
@@ -69,11 +69,11 @@ public class BatchExecutor extends BaseExecutor {
 
     @Override
     public int doUpdate(MappedStatement ms, Object parameterObject) throws SQLException {
-        final Configuration configuration = ms.getConfiguration();
+        final Configuration configuration = ms.getConfiguration();//获取配置对象
         // 创建 StatementHandler 对象
         final StatementHandler handler = configuration.newStatementHandler(this, ms, parameterObject, RowBounds.DEFAULT, null, null);
         final BoundSql boundSql = handler.getBoundSql();
-        final String sql = boundSql.getSql();
+        final String sql = boundSql.getSql();//获取SQL语句
         final Statement stmt;
         // 如果匹配最后一次 currentSql 和 currentStatement ，则聚合到 BatchResult 中
         if (sql.equals(currentSql) && ms.equals(currentStatement)) {
@@ -83,7 +83,7 @@ public class BatchExecutor extends BaseExecutor {
             // 设置事务超时时间
             applyTransactionTimeout(stmt);
             // 设置 SQL 上的参数，例如 PrepareStatement 对象上的占位符
-            handler.parameterize(stmt);//fix Issues 322
+            handler.parameterize(stmt);//绑定实参，处理”？”占位符
             // 获得最后一次的 BatchResult 对象，并添加参数到其中
             BatchResult batchResult = batchResultList.get(last);
             batchResult.addParameterObject(parameterObject);
@@ -96,7 +96,7 @@ public class BatchExecutor extends BaseExecutor {
             // 设置 SQL 上的参数，例如 PrepareStatement 对象上的占位符
             handler.parameterize(stmt);    //fix Issues 322
             // 重新设置 currentSql 和 currentStatement
-            currentSql = sql;
+            currentSql = sql;//更新currentSql和currentStatement
             currentStatement = ms;
             // 添加 Statement 到 statementList 中
             statementList.add(stmt);
@@ -104,7 +104,7 @@ public class BatchExecutor extends BaseExecutor {
             batchResultList.add(new BatchResult(ms, sql, parameterObject));
         }
         // handler.parameterize(stmt);
-        // 批处理
+        // 批处理,底层通过调用Statement.addBatch（）方法添加SQL语句
         handler.batch(stmt);
         return BATCH_UPDATE_RETURN_VALUE;
     }
@@ -159,8 +159,10 @@ public class BatchExecutor extends BaseExecutor {
             if (isRollback) {
                 return Collections.emptyList();
             }
-            // 遍历 statementList 和 batchResultList 数组，逐个提交批处理
+
+            //results集合用于储存批处理的结采
             List<BatchResult> results = new ArrayList<>();
+            // 遍历 statementList 和 batchResultList 数组，逐个提交批处理
             for (int i = 0, n = statementList.size(); i < n; i++) {
                 // 获得 Statement 和 BatchResult 对象
                 Statement stmt = statementList.get(i);
@@ -168,6 +170,8 @@ public class BatchExecutor extends BaseExecutor {
                 BatchResult batchResult = batchResultList.get(i);
                 try {
                     // 批量执行
+                    //调用Statement.executeBatch（）方法批量执行其中$己录的SQL语句，并使用返回的int数组
+                    // 更新BatchResult.updateCounts字段，其中每一个元素都表示一条SQL语句影响的记录条数
                     batchResult.setUpdateCounts(stmt.executeBatch());
                     //
                     MappedStatement ms = batchResult.getMappedStatement();
@@ -175,8 +179,10 @@ public class BatchExecutor extends BaseExecutor {
                     KeyGenerator keyGenerator = ms.getKeyGenerator();
                     if (Jdbc3KeyGenerator.class.equals(keyGenerator.getClass())) {
                         Jdbc3KeyGenerator jdbc3KeyGenerator = (Jdbc3KeyGenerator) keyGenerator;
+                        //获取数据库生成的主键，并设置到parameterObjects中
                         jdbc3KeyGenerator.processBatch(ms, stmt, parameterObjects);
                     } else if (!NoKeyGenerator.class.equals(keyGenerator.getClass())) { //issue #141
+                        //对于其他类型的KeyGenerator，会调用其processAfter（）方法
                         for (Object parameter : parameterObjects) {
                             keyGenerator.processAfter(this, ms, stmt, parameter);
                         }

@@ -49,7 +49,7 @@ public class SimpleExecutor extends BaseExecutor {
     public int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
         Statement stmt = null;
         try {
-            Configuration configuration = ms.getConfiguration();
+            Configuration configuration = ms.getConfiguration();//获取配置对象
             // 创建 StatementHandler 对象
             StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
             // 初始化 StatementHandler 对象

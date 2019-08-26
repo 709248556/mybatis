@@ -56,7 +56,7 @@ public class ReuseExecutor extends BaseExecutor {
 
     @Override
     public int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
-        Configuration configuration = ms.getConfiguration();
+        Configuration configuration = ms.getConfiguration();//获取配置对象
         // 创建 StatementHandler 对象
         StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
         // 初始化 StatementHandler 对象
@@ -91,9 +91,9 @@ public class ReuseExecutor extends BaseExecutor {
     public List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException {
         // 关闭缓存的 Statement 对象们
         for (Statement stmt : statementMap.values()) {
-            closeStatement(stmt);
+            closeStatement(stmt);//边历staternentMap集合并关闭其中的Statement对象
         }
-        statementMap.clear();
+        statementMap.clear();//清空staternentMap缓存
         // 返回空集合
         return Collections.emptyList();
     }
@@ -103,7 +103,7 @@ public class ReuseExecutor extends BaseExecutor {
         BoundSql boundSql = handler.getBoundSql();
         String sql = boundSql.getSql();
         // 存在
-        if (hasStatementFor(sql)) {
+        if (hasStatementFor(sql)) {//检测是否缓存了相同模式的SQL语句所对应的Statement对象
             // 从缓存中获得 Statement 或 PrepareStatement 对象
             stmt = getStatement(sql);
             // 设置事务超时时间
