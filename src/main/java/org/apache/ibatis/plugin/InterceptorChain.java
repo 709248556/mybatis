@@ -37,6 +37,7 @@ public class InterceptorChain {
      * @param target 目标对象
      * @return 应用结果
      */
+    //在InterceptorChain.pluginAll（）方法中会遍历该interceptors集合，并调用其中每个元素的plugin（）方法创建代理对象
     public Object pluginAll(Object target) {
         for (Interceptor interceptor : interceptors) {
             target = interceptor.plugin(target);

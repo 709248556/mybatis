@@ -34,7 +34,7 @@ public interface Interceptor {
     Object intercept(Invocation invocation) throws Throwable;
 
     /**
-     * 应用插件。如应用成功，则会创建目标对象的代理对象
+     * 应用插件。如应用成功，则会创建目标对象的代理对象,决定是否触发intercept（）方法
      *
      * @param target 目标对象
      * @return 应用的结果对象，可以是代理对象，也可以是 target 对象，也可以是任意对象。具体的，看代码实现
@@ -42,7 +42,7 @@ public interface Interceptor {
     Object plugin(Object target);
 
     /**
-     * 设置拦截器属性
+     * 根据配置初始化Interceptor对象
      *
      * @param properties 属性
      */

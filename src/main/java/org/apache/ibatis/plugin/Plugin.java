@@ -41,7 +41,7 @@ public class Plugin implements InvocationHandler {
      */
     private final Interceptor interceptor;
     /**
-     * 拦截的方法映射
+     * 拦截的方法映射，记录了＠Signature注解中的信息
      *
      * KEY：类
      * VALUE：方法集合
@@ -63,6 +63,7 @@ public class Plugin implements InvocationHandler {
      */
     public static Object wrap(Object target, Interceptor interceptor) {
         // 获得拦截的方法映射
+        //获取用户自定义Interceptor中＠Signature注解的信息，getSignatureMap（）方法负责处理@Signature注解
         Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
         // 获得目标类的类型
         Class<?> type = target.getClass();

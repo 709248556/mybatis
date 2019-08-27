@@ -681,6 +681,7 @@ public class Configuration {
         executorType = executorType == null ? ExecutorType.SIMPLE : executorType; // 使用 ExecutorType.SIMPLE
         // 创建对应实现的 Executor 对象
         Executor executor;
+        //根据参数，选择合适的Executor实现
         if (ExecutorType.BATCH == executorType) {
             executor = new BatchExecutor(this, transaction);
         } else if (ExecutorType.REUSE == executorType) {
@@ -692,7 +693,7 @@ public class Configuration {
         if (cacheEnabled) {
             executor = new CachingExecutor(executor);
         }
-        // 应用插件
+        // 通过InterceptorChain.pluginAll（）方法创建Executor的代理对象
         executor = (Executor) interceptorChain.pluginAll(executor);
         return executor;
     }
